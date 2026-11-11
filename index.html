@@ -145,6 +145,29 @@ dialog.cal .dlg{height:100%;max-height:none}
 .side-item .t div{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .side-total{display:flex;justify-content:space-between;font-weight:700;padding:10px 0;font-variant-numeric:tabular-nums}
 
+
+/* ---------- Modos ---------- */
+.modes{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:8px 0 12px}
+.mode{display:flex;flex-direction:column;align-items:flex-start;gap:4px;text-align:left;white-space:normal;padding:10px 12px;border-radius:10px;line-height:1.35}
+.mode span{font-size:12.5px;color:var(--muted)}
+.mode.on{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent);background:var(--accent-soft)}
+@media (max-width:700px){.modes{grid-template-columns:1fr}}
+/* ---------- Manual ---------- */
+dialog.man{width:min(860px,calc(100vw - 24px))}
+.mtoc{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 12px}
+.mtoc a{font-size:12.5px;padding:4px 10px;border-radius:99px;background:var(--surface-2);color:var(--text);text-decoration:none}
+.mtoc a:hover{background:var(--accent-soft)}
+.manual{font-size:14px;line-height:1.55}
+.manual h2{font-size:17px;margin:22px 0 6px;padding-top:10px;border-top:1px solid var(--line)}
+.manual h2:first-of-type{border-top:none;margin-top:4px;padding-top:0}
+.manual h3{font-size:14.5px;margin:14px 0 4px}
+.manual ul,.manual ol{padding-left:20px;margin:6px 0}
+.manual li{margin:3px 0}
+.manual table{border-collapse:collapse;width:100%;margin:8px 0;font-size:13px}
+.manual th,.manual td{border:1px solid var(--line);padding:6px 8px;text-align:left;vertical-align:top}
+.manual th{background:var(--surface-2)}
+.manual code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:12.5px;background:var(--surface-2);padding:1px 4px;border-radius:4px}
+.manual a{color:var(--accent)}
 .toast{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);background:var(--text);color:var(--bg);padding:8px 16px;border-radius:99px;font-size:13px;opacity:0;pointer-events:none;transition:.2s;max-width:calc(100% - 32px);z-index:10}
 .toast.on{opacity:1}
 
@@ -181,8 +204,9 @@ dialog.cal .dlg{height:100%;max-height:none}
       <button class="primary" id="btnCal">Calendário</button>
       <button data-open="dlgRem">Lembretes</button>
       <button data-open="dlgPasta">Pasta</button>
-      <button data-open="dlgClaude">Claude</button>
+      <button data-open="dlgClaude">Usar com IA</button>
       <button data-open="dlgBackup">Cópia</button>
+      <button data-open="dlgManual" title="Como usar a página">Manual</button>
     </nav>
   </header>
 
@@ -197,7 +221,7 @@ dialog.cal .dlg{height:100%;max-height:none}
       <div class="row" style="margin-top:8px"><button id="btnManual">+ Adicionar manualmente</button></div>
       <div class="folder" id="folderBox"></div>
       <div class="scroll" id="reviews"></div>
-      <div class="hint" id="hint"><b>Dica:</b> baixe o PDF do email e arraste-o direto do ícone de downloads do Chrome (no alto, à direita) para a área acima.<br><br>Os arquivos são lidos neste computador e não são enviados para lugar nenhum. Confira data, valor e pagador antes de salvar.</div>
+      <div class="hint" id="hint"><b>Primeira vez?</b> Veja o <a href="#" data-open="dlgManual" style="color:var(--accent)">Manual</a>.<br><br><b>Dica:</b> baixe o PDF do email e arraste-o direto do ícone de downloads do Chrome (no alto, à direita) para a área acima.<br><br>Os arquivos são lidos neste computador e não são enviados para lugar nenhum. Confira data, valor e pagador antes de salvar.</div>
     </section>
 
     <section class="panel col">
@@ -290,31 +314,37 @@ dialog.cal .dlg{height:100%;max-height:none}
 </div></dialog>
 
 <!-- Claude -->
-<dialog id="dlgClaude" style="width:min(760px,calc(100vw - 24px))"><div class="dlg">
-  <div class="dlg-h"><h2>Automatizar com o Claude <span class="tag">opcional</span></h2><button class="ghost" data-close>Fechar ✕</button></div>
+<dialog id="dlgClaude" style="width:min(820px,calc(100vw - 24px))"><div class="dlg">
+  <div class="dlg-h"><h2>Usar com o Claude <span class="tag">opcional</span></h2><button class="ghost" data-close>Fechar ✕</button></div>
   <div class="dlg-b">
-    <p>Se você usa o Claude, ele pode ler seu email todos os dias, salvar os boletos na sua pasta e mandar os avisos sozinho. Esta página monta a instrução; o Claude faz a configuração na sua própria conta.</p>
-    <ul class="req small">
-      <li>Precisa de conta no Claude, do app para computador e de um plano que permita conectar o email e criar tarefas agendadas.</li>
-      <li>O computador precisa estar ligado, com o app aberto, no horário do aviso.</li>
-      <li>Sem isso, continue usando esta página normalmente.</li>
-    </ul>
-    <div class="grid">
-      <div><label for="cHora">Horário do aviso diário</label><input type="time" id="cHora" value="07:00"></div>
-      <div><label for="cSemanal">Resumo semanal</label><select id="cSemanal"><option value="seg">Sim, segunda de manhã</option><option value="nao">Não</option></select></div>
-      <div><label for="cRem">Quem costuma mandar boletos</label><input id="cRem" placeholder="condomínio, escola…"></div>
-      <div><label for="cExc">O que deixar de fora</label><input id="cExc" placeholder="contas em débito automático"></div>
+    <p style="margin-top:0">Escolha como quer usar. Você pode trocar de modo quando quiser.</p>
+    <div class="modes" id="modes">
+      <button class="mode" data-modo="manual"><b>1. Só a página</b><span>Sem IA. Você arrasta os PDFs. Nenhum email é lido.</span></button>
+      <button class="mode" data-modo="pedir"><b>2. Claude quando eu pedir</b><span>Você abre o Claude, ele lê o email naquela conversa e você confere tudo. Nada roda sozinho; no fim, você desconecta o Gmail.</span></button>
+      <button class="mode" data-modo="diario"><b>3. Claude todo dia</b><span>Uma tarefa agendada lê o email todo dia, salva os boletos e manda o resumo no celular.</span></button>
     </div>
-    <p class="small muted" style="margin-top:8px">Pasta usada: <span id="cPastaTxt" class="code" style="display:inline"></span> (altere em "Pasta"; o Claude grava no mesmo diretório).</p>
-    <label class="inline"><input type="checkbox" id="cIncl" checked> Incluir minhas pendências desta página para o Claude conferir</label>
-    <h3>Instrução <span class="muted small">(pode editar)</span></h3>
-    <textarea id="cPrompt" rows="9"></textarea>
+    <div id="mManual">
+      <div class="msg ok">Você já está usando este modo: é só continuar arrastando os boletos para a página. Veja o <a href="#" data-open="dlgManual" style="color:inherit">Manual</a> para o passo a passo.</div>
+    </div>
+    <div id="mClaude">
+      <ul class="req small" id="cReq"></ul>
+      <div class="grid">
+        <div data-diario><label for="cHora">Horário do aviso diário</label><input type="time" id="cHora" value="07:00"></div>
+        <div data-diario><label for="cSemanal">Revisão semanal</label><select id="cSemanal"><option value="seg">Sim, segunda de manhã</option><option value="nao">Não</option></select></div>
+        <div><label for="cRem">Quem costuma mandar boletos</label><input id="cRem" placeholder="condomínio, escola…"></div>
+        <div><label for="cExc">O que deixar de fora</label><input id="cExc" placeholder="contas em débito automático"></div>
+      </div>
+      <p class="small muted" style="margin-top:8px">Pasta usada: <span id="cPastaTxt" class="code" style="display:inline"></span> (altere em "Pasta"). Pagadores cadastrados entram na instrução.</p>
+      <label class="inline"><input type="checkbox" id="cIncl" checked> Incluir minhas pendências desta página para o Claude conferir</label>
+<h3>Instrução <span class="muted small">(pode editar)</span></h3>
+    <textarea id="cPrompt" rows="6"></textarea>
     <div class="row" style="margin-top:8px">
       <a class="btn primary" id="cOpenApp" href="#">Abrir no app do Claude</a>
       <a class="btn" id="cOpenWeb" href="#" target="_blank" rel="noopener">Abrir no navegador</a>
       <button id="cCopy">Copiar instrução</button>
     </div>
     <p class="small muted">A instrução aparece já escrita e só é enviada quando você confirmar no Claude. Se o botão não abrir o Claude, use "Copiar instrução".</p>
+    </div>
   </div>
 </div></dialog>
 
@@ -333,6 +363,221 @@ dialog.cal .dlg{height:100%;max-height:none}
   </div>
 </div></dialog>
 
+<!-- Manual -->
+<dialog class="man" id="dlgManual"><div class="dlg">
+  <div class="dlg-h"><h2>Manual – Meus Vencimentos</h2><button class="ghost" data-close>Fechar ✕</button></div>
+  <div class="dlg-b"><nav class="mtoc"><a href="#m-para-que-serve">Para que serve</a><a href="#m-trs-modos-de-uso">Três modos de uso</a><a href="#m-primeiros-passos-5-minutos">Primeiros passos (5 minutos)</a><a href="#m-uso-no-dia-a-dia">Uso no dia a dia</a><a href="#m-usar-com-o-claude-modos-2-e-3">Usar com o Claude (modos 2 e 3)</a><a href="#m-privacidade-e-segurana">Privacidade e segurança</a><a href="#m-problemas-comuns">Problemas comuns</a></nav><div class="manual"><h2 id="m-para-que-serve">Para que serve</h2>
+<p>O Meus Vencimentos é uma página gratuita para não esquecer boletos e prazos. Ela evita a multa por atraso.</p>
+<p>Você coloca os boletos na página. Ela lê o vencimento e o valor direto do código do boleto e organiza tudo por data. Também guarda o PDF com um nome organizado e manda lembretes para a agenda do celular.</p>
+<ul>
+<li><strong>Endereço:</strong> <a href="https://faprama.github.io/meus-vencimentos/" target="_blank" rel="noopener">faprama.github.io/meus-vencimentos</a></li>
+<li><strong>Custo:</strong> nenhum.</li>
+<li><strong>Instalação:</strong> não precisa instalar nada.</li>
+<li><strong>Navegador:</strong> funciona no Chrome e no Edge, no computador.</li>
+</ul>
+<h2 id="m-trs-modos-de-uso">Três modos de uso</h2>
+<p>Escolha quanto acesso quer dar à IA. Os três usam a mesma página, e dá para trocar de modo quando quiser, no botão <strong>Usar com IA</strong>.</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>1. Só a página</th>
+<th>2. Claude quando eu pedir</th>
+<th>3. Claude todo dia</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Acesso ao email</td>
+<td>Nenhum</td>
+<td>Só durante a conversa que você abriu</td>
+<td>Contínuo, somente leitura</td>
+</tr>
+<tr>
+<td>Quem dispara</td>
+<td>Você arrasta os PDFs</td>
+<td>Você abre o Claude e pede a verificação</td>
+<td>Uma tarefa agendada, todo dia</td>
+</tr>
+<tr>
+<td>Precisa de conta no Claude</td>
+<td>Não</td>
+<td>Sim</td>
+<td>Sim, com plano que permita tarefas agendadas</td>
+</tr>
+<tr>
+<td>Onde o PDF fica</td>
+<td>Pasta escolhida no "Salvar como"</td>
+<td>Subpasta de cada pagador</td>
+<td>Subpasta de cada pagador</td>
+</tr>
+<tr>
+<td>Conferência do boleto</td>
+<td>Código validado pela página</td>
+<td>Código, beneficiário e mudanças em relação aos meses anteriores</td>
+<td>Igual ao modo 2</td>
+</tr>
+<tr>
+<td>Avisos</td>
+<td>Lembretes na agenda do celular</td>
+<td>O que vence, mostrado na própria conversa</td>
+<td>Resumo diário no celular</td>
+</tr>
+<tr>
+<td>Trabalho seu</td>
+<td>Salvar o PDF do email e arrastar para a página</td>
+<td>Conectar, conferir a lista e desconectar</td>
+<td>Ler o resumo e avisar quando pagar</td>
+</tr>
+</tbody>
+</table>
+<h2 id="m-primeiros-passos-5-minutos">Primeiros passos (5 minutos)</h2>
+<ol>
+<li><strong>Abra a página:</strong> entre em <strong>https://faprama.github.io/meus-vencimentos/</strong> no Chrome ou no Edge e salve o endereço nos favoritos.</li>
+<li><strong>Crie uma pasta para os boletos:</strong> por exemplo, <code>Documentos\Boletos</code>.</li>
+<li><strong>Configure o navegador para perguntar onde salvar:</strong> abra <code>chrome://settings/downloads</code> (no Edge, <code>edge://settings/downloads</code>) e ligue <strong>Perguntar onde salvar cada arquivo</strong>. Na primeira vez, escolha a pasta Boletos. Depois disso, o navegador já abre nessa pasta. Assim, os outros downloads continuam indo para onde iam antes.</li>
+<li><strong>Informe a pasta na página:</strong> clique em <strong>Pasta</strong> e digite o caminho da sua pasta de boletos. Isso serve só para referência: quem decide onde o arquivo vai é o navegador.</li>
+<li><strong>Cadastre os pagadores:</strong> ainda na janela <strong>Pasta</strong>, em <strong>Pagadores</strong>, adicione o CPF ou CNPJ de quem paga e um apelido, como "Ana", "Empresa A" ou "Empresa B". Isso é útil para famílias que dividem as contas e para empresas com mais de um CNPJ. Você também pode pular este passo: a página pede o apelido no primeiro boleto de cada pagador.</li>
+</ol>
+<h2 id="m-uso-no-dia-a-dia">Uso no dia a dia</h2>
+<h3>Quando chega um boleto</h3>
+<ol>
+<li><strong>Baixe o PDF:</strong> baixe o anexo do email para qualquer lugar. Pode ser a pasta Downloads.</li>
+<li><strong>Arraste para a página:</strong> arraste o arquivo para a área <strong>Arraste aqui os PDFs</strong>. Ele pode vir direto do ícone de downloads do navegador ou da área de trabalho.</li>
+<li><strong>Confira os dados:</strong> a página preenche vencimento, valor, beneficiário e pagador. Confira e corrija o que for preciso. PDFs escaneados também são lidos, mas demoram alguns segundos a mais.</li>
+<li><strong>Salve:</strong> clique em <strong>Salvar</strong>. O navegador pergunta onde guardar o arquivo, já com o nome organizado. Por exemplo: <code>2026-11-25_boleto_condominio_R$850,00_ana.pdf</code>.</li>
+</ol>
+<p>Se o boleto não tiver PDF, use <strong>+ Adicionar manualmente</strong>. Cole o código do boleto, e a página lê o vencimento e o valor sozinha.</p>
+<h3>Pagar e marcar como pago</h3>
+<ul>
+<li><strong>Copiar código:</strong> copia a linha digitável para colar no app do banco. O ideal é já <strong>agendar</strong> o pagamento para a data de vencimento.</li>
+<li><strong>Paguei:</strong> tira o boleto dos pendentes e o leva para a aba <strong>Concluídos</strong>.</li>
+</ul>
+<h3>Ver o mês</h3>
+<p>O botão <strong>Calendário</strong> mostra o mês em grade, com cores para cada situação:</p>
+<ul>
+<li><strong>Vermelho:</strong> vencido.</li>
+<li><strong>Amarelo:</strong> vence em até 3 dias.</li>
+<li><strong>Azul:</strong> a vencer.</li>
+<li><strong>Verde:</strong> pago.</li>
+</ul>
+<p>Quanto mais forte o fundo do dia, maior o valor a pagar naquele dia. Clique num dia para ver cada pagamento e o total do dia. O seletor <strong>Todos os pagadores</strong> filtra a lista e o calendário por pagador.</p>
+<h3>Lembretes no celular</h3>
+<ul>
+<li><strong>Agenda:</strong> o botão <strong>Agenda</strong> de cada boleto cria o lembrete no Google Agenda.</li>
+<li><strong>Baixar lembretes (.ics):</strong> gera um arquivo com todos os pendentes, para o iPhone ou para importar em outra agenda.</li>
+<li><strong>Antecedência:</strong> em <strong>Lembretes</strong>, escolha quantos dias antes quer ser avisado.</li>
+</ul>
+<h3>Cópia de segurança</h3>
+<p>A lista fica guardada <strong>só no navegador</strong> em que foi feita. Se você trocar de computador ou limpar os dados do navegador, ela some. Use <strong>Cópia › Salvar cópia</strong> de vez em quando, por exemplo uma vez por mês, e <strong>Restaurar cópia</strong> no outro computador.</p>
+<h2 id="m-usar-com-o-claude-modos-2-e-3">Usar com o Claude (modos 2 e 3)</h2>
+<p>O Claude lê o email, encontra os boletos, confere cada um e salva o PDF na pasta do pagador. Ele trabalha só com permissão de leitura: nunca envia, apaga, move nem marca emails, e nunca faz pagamentos.</p>
+<h3>O que é preciso</h3>
+<ul>
+<li><strong>Conta e app:</strong> conta no Claude e o app do Claude instalado no computador.</li>
+<li><strong>Plano:</strong> um plano que permita conectar o Gmail. Para o modo 3, também é preciso poder criar tarefas agendadas.</li>
+<li><strong>Pasta conectada:</strong> no app do Claude, clique no <strong>+</strong> ao lado da caixa de mensagem, escolha <strong>Adicionar pasta</strong> e selecione a pasta Boletos. Pastas no OneDrive funcionam normalmente.</li>
+</ul>
+<h3>Modo 2: Claude quando eu pedir</h3>
+<ol>
+<li><strong>Monte a instrução:</strong> na página, clique em <strong>Usar com IA</strong> e escolha <strong>Claude quando eu pedir</strong>. Clique em <strong>Abrir no app do Claude</strong>: a instrução aparece já escrita. Confira e envie.</li>
+<li><strong>Conecte o Gmail:</strong> quando o Claude pedir, conecte o Gmail e autorize <strong>somente a leitura</strong>.</li>
+<li><strong>Confira a lista:</strong> o Claude procura os emails desde a última verificação registrada (na primeira vez, dos últimos 90 dias). Ele mostra uma lista agrupada por pagador, com totais e alertas. Nada é salvo antes de você responder quais já estão pagos.</li>
+<li><strong>Aprove:</strong> o Claude salva os PDFs e atualiza o arquivo de controle.</li>
+<li><strong>Desconecte o Gmail:</strong> nas configurações do Claude, em <strong>Conectores</strong>, desconecte o Gmail. O acesso também pode ser removido pela conta Google, em <strong>Segurança › Apps de terceiros com acesso à conta</strong>. Na próxima vez, conecte de novo.</li>
+</ol>
+<p>Nada roda sozinho nesse modo. Com o Gmail desconectado, nenhuma conversa do Claude consegue ler o seu email.</p>
+<h3>Modo 3: Claude todo dia</h3>
+<ol>
+<li><strong>Monte a instrução:</strong> em <strong>Usar com IA</strong>, escolha <strong>Claude todo dia</strong>, defina o horário do aviso e clique em <strong>Abrir no app do Claude</strong>.</li>
+<li><strong>Conecte e confira:</strong> conecte o Gmail (somente leitura) e confira a primeira lista, como no modo 2.</li>
+<li><strong>Tarefa diária:</strong> depois da sua aprovação, o Claude cria a tarefa agendada. Ela aparece na lista de tarefas agendadas do app.</li>
+</ol>
+<p>Depois disso:</p>
+<ul>
+<li><strong>Busca diária:</strong> todo dia, o Claude olha os emails dos últimos 3 dias. Assim, um dia perdido é coberto no seguinte.</li>
+<li><strong>Revisão semanal:</strong> toda segunda-feira, ele revisa os últimos 30 dias.</li>
+<li><strong>Computador desligado:</strong> se o computador estiver desligado no horário, o Claude manda o resumo mesmo assim e avisa que os PDFs não foram salvos.</li>
+<li><strong>Verificação fora de hora:</strong> se precisar de uma verificação antes do horário, peça "verifique meus boletos agora".</li>
+</ul>
+<h3>Nos dois modos</h3>
+<ul>
+<li><strong>Pastas por pagador:</strong> cada boleto vai para a subpasta do pagador, por exemplo <code>Boletos\Ana - 12345678909</code>, com o nome organizado pela data.</li>
+<li><strong>Arquivo de controle:</strong> o arquivo <strong>_controle.csv</strong>, na raiz da pasta, abre no Excel. Ele registra beneficiário, CNPJ, pagador, vencimento, valor, código e situação de cada boleto. É por ele que o Claude sabe o que já tratou, sem precisar marcar nada no seu email.</li>
+<li><strong>Ao pagar:</strong> avise o Claude, por exemplo "paguei o condomínio".</li>
+</ul>
+<h3>O que o Claude não resolve sozinho</h3>
+<ul>
+<li><strong>PDF com senha:</strong> muitos usam parte do CPF do titular como senha. Informe a regra de senha ao Claude. Sem ela, ele usa os dados do texto do email.</li>
+<li><strong>Boleto só no site:</strong> quando o email diz "sua fatura está disponível no site", o Claude avisa, mas você precisa baixar a fatura.</li>
+<li><strong>Pagamentos:</strong> o Claude nunca paga nada. Ele só avisa.</li>
+</ul>
+<h2 id="m-privacidade-e-segurana">Privacidade e segurança</h2>
+<ul>
+<li><strong>Na página:</strong> os boletos são lidos no seu próprio computador e não são enviados para lugar nenhum. A lista, os pagadores e os CPFs ficam só no seu navegador. Cada pessoa que usa o link tem a sua própria lista, e ninguém vê a lista de ninguém.</li>
+<li><strong>Com o Claude:</strong> você escolhe o nível de acesso: nenhum (modo 1), só durante a verificação (modo 2) ou contínuo (modo 3). O Claude trabalha na sua conta, com o seu email e a sua pasta. Os dados não passam pela conta de quem indicou a página.</li>
+<li><strong>Permissões:</strong> basta autorizar a leitura do email. O Claude não envia, não apaga e não move mensagens, e nunca faz pagamentos.</li>
+</ul>
+<h3>Sinais de boleto falso</h3>
+<p>A página valida o código do boleto. O Claude, quando usado, confere também os itens abaixo. Desconfie e não pague se:</p>
+<ul>
+<li><strong>Código:</strong> o código não confere, ou o valor e o vencimento do código são diferentes dos impressos.</li>
+<li><strong>Beneficiário:</strong> o beneficiário, ou o CNPJ dele, não é a empresa que mandou o email.</li>
+<li><strong>Banco ou beneficiário diferente:</strong> o banco ou o beneficiário mudou em relação aos meses anteriores, sem aviso.</li>
+<li><strong>Pagador:</strong> o pagador não é você nem alguém da casa.</li>
+<li><strong>Remetente:</strong> o email chegou de um endereço diferente do habitual.</li>
+</ul>
+<p>Na hora de pagar, confira no app do banco se o nome do beneficiário é o esperado.</p>
+<p>Outra proteção é ativar o <strong>DDA</strong> (Débito Direto Autorizado) no seu banco. Com ele, os boletos emitidos no seu CPF aparecem direto no app, e fica fácil comparar com o que chegou por email.</p>
+<h2 id="m-problemas-comuns">Problemas comuns</h2>
+<table>
+<thead>
+<tr>
+<th>Problema</th>
+<th>O que fazer</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>A lista sumiu</td>
+<td>Ela fica só no navegador em que foi feita. Use <strong>Cópia › Restaurar cópia</strong> com a última cópia salva.</td>
+</tr>
+<tr>
+<td>O PDF foi para a pasta errada</td>
+<td>O navegador abre na última pasta usada em qualquer download. Volte até a pasta Boletos na janela "Salvar como".</td>
+</tr>
+<tr>
+<td>A página não achou o vencimento ou o valor</td>
+<td>Cole o código do boleto (linha digitável) no campo próprio, ou preencha à mão. Contas de água, luz e telefone não trazem o vencimento no código.</td>
+</tr>
+<tr>
+<td>Aparece "Este código não confere"</td>
+<td>Algum número foi copiado errado. Se o código veio do próprio boleto, desconfie e confirme com quem emitiu.</td>
+</tr>
+<tr>
+<td>O PDF escaneado demora</td>
+<td>Na primeira vez, a página baixa o leitor de texto, com cerca de 5 MB. Depois fica mais rápido.</td>
+</tr>
+<tr>
+<td>"Escolher pasta" não funciona</td>
+<td>Em alguns computadores, o navegador bloqueia a gravação direta em pasta. Use os downloads do navegador, que são o padrão da página.</td>
+</tr>
+<tr>
+<td>O Claude não mandou o resumo do dia (modo 3)</td>
+<td>Veja se o computador estava ligado e com o app aberto. Peça "verifique meus boletos agora".</td>
+</tr>
+<tr>
+<td>Não quero deixar o email conectado</td>
+<td>Use o modo 2: conecte o Gmail só durante a verificação e desconecte no final.</td>
+</tr>
+<tr>
+<td>Uma conta mensal não apareceu</td>
+<td>O Claude avisa as contas que costumam chegar e ainda não chegaram no mês. Confira no site da empresa ou no DDA do banco.</td>
+</tr>
+</tbody>
+</table></div></div>
+</div></dialog>
+
 <div class="toast" id="toast"></div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
@@ -341,7 +586,7 @@ dialog.cal .dlg{height:100%;max-height:none}
 /* ================= Armazenamento ================= */
 const KEY="meusVencimentos.v1";
 const DEF_PASTA="C:\\documentos\\boletos";
-const DEF={items:[],cfg:{ant:[7,2],hora:"09:00",cHora:"07:00",cSemanal:"seg",cRem:"",cExc:"",cIncl:true,saveFile:true,pastaNome:"",saida:"download",pagadores:[]}};
+const DEF={items:[],cfg:{ant:[7,2],hora:"09:00",cHora:"07:00",cSemanal:"seg",cRem:"",cExc:"",cIncl:true,cModo:"pedir",saveFile:true,pastaNome:"",saida:"download",pagadores:[]}};
 let DB=load();
 function load(){try{const r=localStorage.getItem(KEY);if(r){const d=JSON.parse(r);return{items:d.items||[],cfg:Object.assign({},DEF.cfg,d.cfg||{})}}}catch(e){}return JSON.parse(JSON.stringify(DEF))}
 function save(){try{localStorage.setItem(KEY,JSON.stringify(DB))}catch(e){toast("Não foi possível guardar neste navegador. Use 'Cópia'.")}}
@@ -929,40 +1174,59 @@ $("#btnForgetDir").onclick=async()=>{DIR=null;DB.cfg.pastaNome="";save();await k
 let promptEdited=false;
 function antText(){const a=[...DB.cfg.ant].sort((x,y)=>y-x);if(!a.length)return"3 dias antes";return a.map(x=>x===0?"no dia":x===1?"1 dia antes":x+" dias antes").join(" e ")}
 function buildPrompt(){
-  const c=DB.cfg;const pasta=pastaLabel();
+  const c=DB.cfg;const pasta=pastaLabel();const modo=c.cModo==="diario"?"diario":"pedir";
   const pend=DB.items.filter(i=>i.status!=="concluido").sort((a,b)=>a.venc.localeCompare(b.venc));
   const pags=(c.pagadores||[]);
-  const pagTxt=pags.length?pags.map(p=>`  - ${p.apelido}: ${fmtDoc(p.doc)} → subpasta "${safeName(p.apelido+" - "+String(p.doc).replace(/[^\d*]/g,""))}"`).join("\n"):"  - (nenhum cadastrado ainda: descubra pelos boletos e me pergunte o apelido de cada um)";
-  let t=`Quero que você cuide dos meus boletos e prazos a partir do meu email. Conduza a configuração comigo, passo a passo, e me pergunte o que faltar.
+  const pagTxt=pags.length?pags.map(p=>`  - ${p.apelido}: ${fmtDoc(p.doc)} → subpasta "${safeName(p.apelido+" - "+String(p.doc).replace(/[^\d*]/g,""))}"`).join("\n"):"  - (nenhum cadastrado: descubra pelos boletos e me pergunte o apelido de cada um)";
+  const intro=modo==="pedir"
+    ?`Quero fazer agora uma verificação dos meus boletos, com você e sob minha supervisão. Não crie tarefas agendadas: o acesso ao meu email vale só para esta conversa.`
+    :`Quero que você cuide dos meus boletos todos os dias a partir do meu email. Conduza a configuração comigo, passo a passo, e me pergunte o que faltar.`;
+  let t=`${intro}
 
 Minhas preferências:
 - Pasta dos boletos no meu computador: ${pasta}${c.pastaNome?"":" (confirme comigo o caminho completo)"}
 - Pagadores (CPF/CNPJ de quem paga) e a subpasta de cada um dentro da pasta dos boletos:
 ${pagTxt}
+- Quem costuma mandar boletos ou prazos: ${c.cRem||"(não informado)"}
+- Deixar de fora: ${c.cExc||"(nada)"}${modo==="diario"?`
 - Horário do aviso diário: ${c.cHora||"07:00"}
 - Avisar ${antText()} do vencimento, e destacar o que vence em até 3 dias
-- Resumo semanal: ${c.cSemanal==="seg"?"sim, segunda de manhã, com o que vence nos próximos 30 dias e o que ficou pendente":"não"}
-- Quem costuma mandar boletos ou prazos: ${c.cRem||"(não informado)"}
-- Deixar de fora: ${c.cExc||"(nada)"}
+- Revisão semanal: ${c.cSemanal==="seg"?"sim, às segundas-feiras, revendo os emails dos últimos 30 dias":"não"}`:""}
 
 Regras:
-- Só leia meu email depois que eu autorizar a conexão. Nunca envie, responda, apague ou mova emails; o único que pode fazer é aplicar o marcador abaixo.
+- Use o Gmail somente para leitura. Nunca envie, responda, encaminhe, apague, mova nem marque emails.
 - Nunca faça pagamentos nem transferências; apenas avise.
+- Controle: use o arquivo _controle.csv na raiz da pasta dos boletos (UTF-8, separado por ponto e vírgula, colunas: email_id;recebido_em;remetente;beneficiario;cnpj_beneficiario;pagador;titular;vencimento;valor;linha_digitavel;situacao;arquivo). Crie o arquivo se não existir. Ele registra cada email tratado: nunca trate de novo um email cujo id já esteja lá.
+
+Como tratar cada boleto:
+a) Leia o conteúdo: beneficiário (nome e CNPJ), pagador (nome e CPF/CNPJ), vencimento, valor, multa, juros, desconto, data limite, referência e linha digitável. Se o PDF tiver senha e eu não tiver informado a regra, use os dados do texto do email e me avise.
+b) Confira: valide os dígitos da linha digitável e se o valor e o vencimento do código batem com os impressos (contas de consumo, que começam com 8, não trazem o vencimento no código). Alerte com destaque se algo não bater, se o beneficiário não corresponder a quem mandou o email, se o banco ou o beneficiário mudou em relação aos meses anteriores no _controle.csv, ou se o pagador não for nenhum dos meus. São sinais de boleto falso.
+c) Identifique o pagador pelo CPF/CNPJ (se aparecer mascarado, como 123.***.***-09, use os dígitos visíveis). Salve o PDF na subpasta desse pagador com o nome AAAA-MM-DD_boleto_beneficiario_R$valor.pdf (por exemplo 2026-11-25_boleto_condominio_R$850,00.pdf), sem sobrescrever nem duplicar arquivos. Não apague nem mexa em outros arquivos da pasta. Se o pagador não estiver na lista, me pergunte o apelido antes de criar a subpasta.
+d) Acrescente uma linha ao _controle.csv.
 
 O que fazer:
-1. Verifique se meu email está conectado. Se não estiver, me ajude a conectar e espere minha autorização.
-2. Verifique se você tem acesso à pasta dos boletos no meu computador. Se não tiver, peça acesso. Crie a pasta e as subpastas que faltarem.
-3. Procure nos emails dos últimos 90 dias, lidos ou não, boletos e comunicados com data limite (termos como boleto, vencimento, linha digitável, fatura, cobrança, prazo, data limite; anexos em PDF).
-4. Leia o conteúdo de cada boleto e anote: beneficiário (nome e CNPJ), pagador (nome e CPF/CNPJ), vencimento, valor, multa, juros, desconto, data limite para pagamento, referência (mês, nota fiscal) e linha digitável.
-5. Confira o boleto: valide os dígitos da linha digitável e veja se o valor e o vencimento contidos no código batem com os impressos. Me alerte com destaque se algo não bater, se o beneficiário não corresponder a quem mandou o email, se o banco ou o beneficiário mudou em relação aos meses anteriores, ou se o pagador não for nenhum dos meus. Esses são sinais de boleto falso.
-6. Identifique o pagador pelo CPF/CNPJ (alguns boletos mostram o CPF parcialmente, como 123.***.***-09: use os dígitos visíveis). Salve o PDF na subpasta desse pagador com o nome AAAA-MM-DD_boleto_beneficiario_R$valor.pdf (por exemplo 2026-11-25_boleto_condominio_R$850,00.pdf), sem duplicar arquivos que já estejam lá. Se o pagador não estiver na lista, me pergunte o apelido antes de criar a subpasta.
-7. Marque cada email tratado com o marcador "Prazos/Processado". Use o marcador, não o status de lido, para saber o que já foi tratado.
-8. Mostre a lista inicial de pendências agrupada por pagador, com o total de cada um e os alertas do passo 5, para eu conferir antes de seguir.
-9. Depois da minha aprovação, crie uma tarefa agendada diária no horário acima que repita os passos 3 a 7 para emails novos e me envie um resumo do que vence nos próximos dias, agrupado por pagador e com os totais. Uma vez por semana, revise os emails dos últimos 30 dias que ainda estão sem o marcador.`;
+1. Verifique se o Gmail está conectado. Se não estiver, me ajude a conectar, autorizando somente a leitura, e espere minha autorização.
+2. Verifique se você tem acesso à pasta dos boletos no meu computador. Se não tiver, peça acesso.
+3. Leia o _controle.csv e procure, lidos ou não, os emails ${modo==="pedir"?"recebidos desde o último email registrado nele (se o arquivo não existir, dos últimos 90 dias)":"dos últimos 90 dias"} com boletos ou contas a pagar: anexos PDF com termos como boleto, fatura, vencimento, cobrança, mensalidade, linha digitável; emails com código de barras ou "pague até" no texto; avisos de "novo boleto emitido no seu CPF" do banco. Ignore listas de discussão, propaganda, prestações de contas e notas fiscais.
+4. Leia e confira cada boleto (itens a e b), mas ainda não salve nada.
+5. Mostre a lista agrupada por pagador, com o total de cada um e os alertas, e espere eu dizer quais já paguei e se pode salvar.
+6. Depois da minha aprovação, salve os PDFs e atualize o _controle.csv (itens c e d), marcando como pago o que eu disser que já paguei.`;
+  if(modo==="pedir")t+=`
+7. Ao terminar, me mostre o que vence nos próximos dias e me lembre de desconectar o Gmail (configurações do Claude › Conectores) se eu não quiser deixar o acesso ativo.`;
+  else t+=`
+7. Depois disso, crie uma tarefa agendada diária no horário acima que, a cada execução: procure os emails dos últimos 3 dias (e, se a revisão semanal estiver ligada, dos últimos 30 dias às segundas-feiras); trate os novos como nos itens a a d, sem pedir aprovação; e me envie um resumo com: alertas de possível fraude, pendentes vencidos, o que vence em até 3 e em até 7 dias, boletos novos, e contas que costumam chegar todo mês e ainda não chegaram. Se o computador estiver desligado, a tarefa deve mandar o resumo assim mesmo e avisar que os PDFs não foram salvos.
+8. Quando eu disser que paguei algo, mude a situação daquela linha do _controle.csv para pago.`;
   if(c.cIncl&&pend.length)t+=`\n\nPendências que já anotei (confira se aparecem no email e inclua as que não aparecerem):\n`+pend.map(i=>`- ${isoToBR(i.venc)} – ${i.descricao}${i.valor!=null?" – "+money(i.valor):""}${pagLabel(i)?" – pagador: "+pagLabel(i):""}${i.debito?" (débito automático)":""}`).join("\n");
   return t;
 }
-function updatePrompt(){$("#cPastaTxt").textContent=pastaLabel();if(!promptEdited)$("#cPrompt").value=buildPrompt();syncLinks()}
+const REQ={pedir:["Conta no Claude e o app do Claude no computador.","Um plano que permita conectar o Gmail.","Você acompanha a verificação do começo ao fim; nada roda sozinho depois."],
+  diario:["Conta no Claude e o app do Claude no computador.","Um plano que permita conectar o Gmail e criar tarefas agendadas.","O computador ligado, com o app aberto, no horário do aviso. O Gmail fica conectado, só para leitura."]};
+function renderModo(){const m=DB.cfg.cModo||"pedir";document.querySelectorAll("#modes .mode").forEach(b=>b.classList.toggle("on",b.dataset.modo===m));
+  $("#mManual").hidden=m!=="manual";$("#mClaude").hidden=m==="manual";
+  document.querySelectorAll("#mClaude [data-diario]").forEach(e=>e.hidden=m!=="diario");
+  if(REQ[m])$("#cReq").innerHTML=REQ[m].map(x=>`<li>${esc(x)}</li>`).join("")}
+function updatePrompt(){renderModo();$("#cPastaTxt").textContent=pastaLabel();if(!promptEdited)$("#cPrompt").value=buildPrompt();syncLinks()}
+$("#modes").addEventListener("click",e=>{const b=e.target.closest(".mode");if(!b)return;DB.cfg.cModo=b.dataset.modo;save();promptEdited=false;updatePrompt()});
 function syncLinks(){const q=encodeURIComponent($("#cPrompt").value.slice(0,12000));$("#cOpenApp").href="claude://claude.ai/new?q="+q;$("#cOpenWeb").href="https://claude.ai/new?q="+q}
 ["cHora","cSemanal","cRem","cExc"].forEach(k=>$("#"+k).addEventListener("input",e=>{DB.cfg[k]=e.target.value;save();updatePrompt()}));
 $("#cIncl").addEventListener("change",e=>{DB.cfg.cIncl=e.target.checked;save();updatePrompt()});
@@ -984,6 +1248,7 @@ $("#btnClear").onclick=e=>{const b=e.currentTarget;if(b.dataset.armed){DB.items=
 document.addEventListener("click",e=>{const o=e.target.closest("[data-open]");if(o){const d=document.getElementById(o.dataset.open);d.showModal();if(o.dataset.open==="dlgClaude")updatePrompt();if(o.dataset.open==="dlgPasta")renderFolder()}
   const c=e.target.closest("[data-close]");if(c)c.closest("dialog").close()});
 document.querySelectorAll("dialog").forEach(d=>d.addEventListener("click",e=>{if(e.target===d)d.close()}));
+document.querySelector(".mtoc").addEventListener("click",e=>{const a=e.target.closest("a");if(!a)return;e.preventDefault();const t=document.querySelector(a.getAttribute("href"));if(t)t.scrollIntoView({behavior:"smooth",block:"start"})});
 const drop=$("#drop"),fi=$("#file");
 drop.onclick=()=>fi.click();drop.onkeydown=e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();fi.click()}};
 fi.onchange=()=>{handleFiles([...fi.files]);fi.value=""};
