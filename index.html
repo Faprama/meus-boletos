@@ -155,7 +155,8 @@ dialog.cal .dlg{height:100%;max-height:none}
 .mode{display:flex;flex-direction:column;align-items:flex-start;gap:4px;text-align:left;white-space:normal;padding:10px 12px;border-radius:10px;line-height:1.35}
 .mode span{font-size:12.5px;color:var(--muted)}
 .mode.on{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent);background:var(--accent-soft)}
-@media (max-width:700px){.modes{grid-template-columns:1fr}}
+.modes.ias{grid-template-columns:repeat(2,1fr);margin-top:0}
+@media (max-width:700px){.modes,.modes.ias{grid-template-columns:1fr}}
 /* ---------- Manual ---------- */
 dialog.man{width:min(860px,calc(100vw - 24px))}
 .mtoc{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 12px}
@@ -208,7 +209,7 @@ dialog.man{width:min(860px,calc(100vw - 24px))}
       <button class="primary" id="btnCal">Calendário</button>
       <button data-open="dlgRem">Lembretes</button>
       <button data-open="dlgPasta">Pasta</button>
-      <button data-open="dlgClaude">Usar com IA</button>
+      <button data-open="dlgClaude">IA</button>
       <button data-open="dlgBackup">Cópia</button>
       <button data-open="dlgManual" title="Como usar a página">Manual</button>
     </nav>
@@ -336,18 +337,23 @@ dialog.man{width:min(860px,calc(100vw - 24px))}
 
 <!-- Claude -->
 <dialog id="dlgClaude" style="width:min(820px,calc(100vw - 24px))"><div class="dlg">
-  <div class="dlg-h"><h2>Usar com o Claude <span class="tag">opcional</span></h2><button class="ghost" data-close>Fechar ✕</button></div>
+  <div class="dlg-h"><h2>Usar com IA <span class="tag">opcional</span></h2><button class="ghost" data-close>Fechar ✕</button></div>
   <div class="dlg-b">
-    <p style="margin-top:0">Escolha como quer usar. Você pode trocar de modo quando quiser.</p>
+    <p style="margin-top:0">Escolha quanto acesso quer dar à IA. Você pode trocar quando quiser.</p>
     <div class="modes" id="modes">
-      <button class="mode" data-modo="manual"><b>1. Só a página</b><span>Sem IA. Você arrasta os PDFs. Nenhum email é lido.</span></button>
-      <button class="mode" data-modo="pedir"><b>2. Claude quando eu pedir</b><span>Você abre o Claude, ele lê o email naquela conversa e você confere tudo. Nada roda sozinho; no fim, você desconecta o Gmail.</span></button>
-      <button class="mode" data-modo="diario"><b>3. Claude todo dia</b><span>Uma tarefa agendada lê o email todo dia, salva os boletos e manda o resumo no celular.</span></button>
+      <button class="mode" data-modo="manual"><b>1. Nunca</b><span>Só a página, sem IA. Você arrasta os PDFs. Nenhum email é lido.</span></button>
+      <button class="mode" data-modo="pedir"><b>2. Agora</b><span>Quando você pede. A IA lê o email numa conversa que você abriu e você confere tudo. Nada roda sozinho.</span></button>
+      <button class="mode" data-modo="diario"><b>3. Sempre</b><span>Todo dia. Uma tarefa agendada lê o email, salva os boletos e manda um resumo.</span></button>
     </div>
     <div id="mManual">
       <div class="msg ok">Você já está usando este modo: é só continuar arrastando os boletos para a página. Veja o <a href="#" data-open="dlgManual" style="color:inherit">Manual</a> para o passo a passo.</div>
     </div>
     <div id="mClaude">
+      <p class="small" style="margin:10px 0 6px"><b>Qual IA?</b></p>
+      <div class="modes ias" id="ias">
+        <button class="mode" data-ia="claude"><b>Claude</b><span>App do Claude no computador, com o Gmail conectado e a pasta dos boletos.</span></button>
+        <button class="mode" data-ia="codex"><b>Codex / ChatGPT</b><span>App do Codex no computador, com o plugin do Gmail e a pasta dos boletos.</span></button>
+      </div>
       <ul class="req small" id="cReq"></ul>
       <div class="grid">
         <div data-diario><label for="cHora">Horário do aviso diário</label><input type="time" id="cHora" value="07:00"></div>
@@ -356,15 +362,16 @@ dialog.man{width:min(860px,calc(100vw - 24px))}
         <div><label for="cExc">O que deixar de fora</label><input id="cExc" placeholder="contas em débito automático"></div>
       </div>
       <p class="small muted" style="margin-top:8px">Pasta usada: <span id="cPastaTxt" class="code" style="display:inline"></span> (altere em "Pasta"). Pagadores cadastrados entram na instrução.</p>
-      <label class="inline"><input type="checkbox" id="cIncl" checked> Incluir minhas pendências desta página para o Claude conferir</label>
+      <label class="inline"><input type="checkbox" id="cIncl" checked> Incluir minhas pendências desta página para a IA conferir</label>
 <h3>Instrução <span class="muted small">(pode editar)</span></h3>
     <textarea id="cPrompt" rows="6"></textarea>
     <div class="row" style="margin-top:8px">
-      <a class="btn primary" id="cOpenApp" href="#">Abrir no app do Claude</a>
-      <a class="btn" id="cOpenWeb" href="#" target="_blank" rel="noopener">Abrir no navegador</a>
+      <a class="btn primary" id="cOpenApp" href="#" data-ia-only="claude">Abrir no app do Claude</a>
+      <a class="btn" id="cOpenWeb" href="#" target="_blank" rel="noopener" data-ia-only="claude">Abrir no navegador</a>
       <button id="cCopy">Copiar instrução</button>
+      <a class="btn" id="cOpenGpt" href="#" target="_blank" rel="noopener" data-ia-only="codex">Abrir o ChatGPT no navegador</a>
     </div>
-    <p class="small muted">A instrução aparece já escrita e só é enviada quando você confirmar no Claude. Se o botão não abrir o Claude, use "Copiar instrução".</p>
+    <p class="small muted" id="cNota"></p>
     </div>
   </div>
 </div></dialog>
@@ -387,7 +394,7 @@ dialog.man{width:min(860px,calc(100vw - 24px))}
 <!-- Manual -->
 <dialog class="man" id="dlgManual"><div class="dlg">
   <div class="dlg-h"><h2>Manual – Meus Vencimentos</h2><button class="ghost" data-close>Fechar ✕</button></div>
-  <div class="dlg-b"><nav class="mtoc"><a href="#m-para-que-serve">Para que serve</a><a href="#m-trs-modos-de-uso">Três modos de uso</a><a href="#m-primeiros-passos-5-minutos">Primeiros passos (5 minutos)</a><a href="#m-uso-no-dia-a-dia">Uso no dia a dia</a><a href="#m-usar-com-o-claude-modos-2-e-3">Usar com o Claude (modos 2 e 3)</a><a href="#m-privacidade-e-segurana">Privacidade e segurança</a><a href="#m-problemas-comuns">Problemas comuns</a></nav><div class="manual"><h2 id="m-para-que-serve">Para que serve</h2>
+  <div class="dlg-b"><nav class="mtoc"><a href="#m-para-que-serve">Para que serve</a><a href="#m-trs-modos-de-uso">Três modos de uso</a><a href="#m-primeiros-passos-5-minutos">Primeiros passos (5 minutos)</a><a href="#m-uso-no-dia-a-dia">Uso no dia a dia</a><a href="#m-usar-com-o-claude-modos-2-e-3">Usar com o Claude (modos 2 e 3)</a><a href="#m-usar-com-o-codex-chatgpt">Codex / ChatGPT</a><a href="#m-privacidade-e-segurana">Privacidade e segurança</a><a href="#m-problemas-comuns">Problemas comuns</a></nav><div class="manual"><h2 id="m-para-que-serve">Para que serve</h2>
 <p>O Meus Vencimentos é uma página gratuita para não esquecer boletos e prazos. Ela evita a multa por atraso.</p>
 <p>Você coloca os boletos na página. Ela lê o vencimento e o valor direto do código do boleto e organiza tudo por data. Também guarda o PDF com um nome organizado e manda lembretes para a agenda do celular.</p>
 <ul>
@@ -397,14 +404,14 @@ dialog.man{width:min(860px,calc(100vw - 24px))}
 <li><strong>Navegador:</strong> funciona no Chrome e no Edge, no computador.</li>
 </ul>
 <h2 id="m-trs-modos-de-uso">Três modos de uso</h2>
-<p>Escolha quanto acesso quer dar à IA. Os três usam a mesma página, e dá para trocar de modo quando quiser, no botão <strong>Usar com IA</strong>.</p>
+<p>Escolha quanto acesso quer dar à IA. Os três usam a mesma página, e dá para trocar de modo quando quiser, no botão <strong>IA</strong>. Nos modos 2 e 3, você escolhe também a IA: <strong>Claude</strong> ou <strong>Codex / ChatGPT</strong>.</p>
 <table>
 <thead>
 <tr>
 <th></th>
-<th>1. Só a página</th>
-<th>2. Claude quando eu pedir</th>
-<th>3. Claude todo dia</th>
+<th>1. Nunca</th>
+<th>2. Agora</th>
+<th>3. Sempre</th>
 </tr>
 </thead>
 <tbody>
@@ -507,18 +514,19 @@ dialog.man{width:min(860px,calc(100vw - 24px))}
 <li><strong>Plano:</strong> um plano que permita conectar o Gmail. Para o modo 3, também é preciso poder criar tarefas agendadas.</li>
 <li><strong>Pasta conectada:</strong> no app do Claude, clique no <strong>+</strong> ao lado da caixa de mensagem, escolha <strong>Adicionar pasta</strong> e selecione a pasta Boletos. Pastas no OneDrive funcionam normalmente.</li>
 </ul>
-<h3>Modo 2: Claude quando eu pedir</h3>
+<h3>Modo 2: Agora (quando eu pedir)</h3>
 <ol>
-<li><strong>Monte a instrução:</strong> na página, clique em <strong>Usar com IA</strong> e escolha <strong>Claude quando eu pedir</strong>. Clique em <strong>Abrir no app do Claude</strong>: a instrução aparece já escrita. Confira e envie.</li>
+<li><strong>Monte a instrução:</strong> na página, clique em <strong>IA</strong>, escolha <strong>2. Agora</strong> e <strong>Claude</strong>. Clique em <strong>Abrir no app do Claude</strong>: a instrução aparece já escrita. Confira e envie.</li>
 <li><strong>Conecte o Gmail:</strong> quando o Claude pedir, conecte o Gmail e autorize <strong>somente a leitura</strong>.</li>
 <li><strong>Confira a lista:</strong> o Claude procura os emails desde a última verificação registrada (na primeira vez, dos últimos 90 dias). Ele mostra uma lista agrupada por pagador, com totais e alertas. Nada é salvo antes de você responder quais já estão pagos.</li>
 <li><strong>Aprove:</strong> o Claude salva os PDFs e atualiza o arquivo de controle.</li>
-<li><strong>Desconecte o Gmail:</strong> nas configurações do Claude, em <strong>Conectores</strong>, desconecte o Gmail. O acesso também pode ser removido pela conta Google, em <strong>Segurança › Apps de terceiros com acesso à conta</strong>. Na próxima vez, conecte de novo.</li>
+<li><strong>Desconecte o Gmail (opcional):</strong> nas configurações do Claude, em <strong>Conectores</strong>, desconecte o Gmail. O acesso também pode ser removido pela conta Google, em <strong>Segurança › Apps de terceiros com acesso à conta</strong>. Na próxima vez, conecte de novo.</li>
 </ol>
 <p>Nada roda sozinho nesse modo. Com o Gmail desconectado, nenhuma conversa do Claude consegue ler o seu email.</p>
-<h3>Modo 3: Claude todo dia</h3>
+<p><strong>Variante menos trabalhosa:</strong> deixe o Gmail sempre conectado, sem tarefa agendada. O Claude continua lendo o email só quando você pede, numa conversa que você abriu. Você pula os passos de conectar e desconectar; em troca, o acesso fica disponível em qualquer conversa sua com o Claude.</p>
+<h3>Modo 3: Sempre (todo dia)</h3>
 <ol>
-<li><strong>Monte a instrução:</strong> em <strong>Usar com IA</strong>, escolha <strong>Claude todo dia</strong>, defina o horário do aviso e clique em <strong>Abrir no app do Claude</strong>.</li>
+<li><strong>Monte a instrução:</strong> em <strong>IA</strong>, escolha <strong>3. Sempre</strong> e <strong>Claude</strong>, defina o horário do aviso e clique em <strong>Abrir no app do Claude</strong>.</li>
 <li><strong>Conecte e confira:</strong> conecte o Gmail (somente leitura) e confira a primeira lista, como no modo 2.</li>
 <li><strong>Tarefa diária:</strong> depois da sua aprovação, o Claude cria a tarefa agendada. Ela aparece na lista de tarefas agendadas do app.</li>
 </ol>
@@ -541,6 +549,16 @@ dialog.man{width:min(860px,calc(100vw - 24px))}
 <li><strong>PDF com senha:</strong> muitos usam parte do CPF do titular como senha. Informe a regra de senha ao Claude. Sem ela, ele usa os dados do texto do email.</li>
 <li><strong>Boleto só no site:</strong> quando o email diz "sua fatura está disponível no site", o Claude avisa, mas você precisa baixar a fatura.</li>
 <li><strong>Pagamentos:</strong> o Claude nunca paga nada. Ele só avisa.</li>
+</ul>
+<h2 id="m-usar-com-o-codex-chatgpt">Usar com o Codex / ChatGPT</h2>
+<p>Quem usa o ChatGPT pode fazer o mesmo com o <strong>app do Codex</strong>, da OpenAI. A instrução é a mesma, com os passos adaptados.</p>
+<ul>
+<li><strong>O que é preciso:</strong> conta paga do ChatGPT, o app do Codex no computador e o plugin do Gmail instalado no Codex (<strong>Plugins › Gmail</strong>).</li>
+<li><strong>Pasta:</strong> abra a pasta dos boletos no Codex, para ele poder salvar os PDFs e o <strong>_controle.csv</strong>.</li>
+<li><strong>Modo 2 (Agora):</strong> em <strong>IA</strong>, escolha <strong>2. Agora</strong> e <strong>Codex / ChatGPT</strong>, clique em <strong>Copiar instrução</strong> e cole numa conversa nova do Codex.</li>
+<li><strong>Modo 3 (Sempre):</strong> escolha <strong>3. Sempre</strong>. Depois da primeira verificação, o Codex escreve o texto da automação e guia você para criá-la em <strong>Automações › Nova automação</strong>, com a pasta dos boletos anexada. Cada execução consome créditos do Codex.</li>
+<li><strong>Permissões:</strong> o plugin do Gmail do Codex pode pedir permissão de envio. A instrução proíbe enviar, responder ou apagar emails, mas a permissão fica concedida. Se isso incomoda, desconecte o plugin no fim de cada verificação.</li>
+<li><strong>ChatGPT no navegador:</strong> o botão <strong>Abrir o ChatGPT no navegador</strong> serve para consultar: ele lê o email e monta a lista, mas não salva os PDFs na sua pasta.</li>
 </ul>
 <h2 id="m-privacidade-e-segurana">Privacidade e segurança</h2>
 <ul>
@@ -620,7 +638,7 @@ dialog.man{width:min(860px,calc(100vw - 24px))}
 /* ================= Armazenamento ================= */
 const KEY="meusVencimentos.v1";
 const DEF_PASTA="C:\\documentos\\boletos";
-const DEF={items:[],cfg:{ant:[7,2],hora:"09:00",cHora:"07:00",cSemanal:"seg",cRem:"",cExc:"",cIncl:true,cModo:"pedir",saveFile:true,pastaNome:"",saida:"download",pagadores:[]}};
+const DEF={items:[],cfg:{ant:[7,2],hora:"09:00",cHora:"07:00",cSemanal:"seg",cRem:"",cExc:"",cIncl:true,cModo:"pedir",cIA:"claude",saveFile:true,pastaNome:"",saida:"download",pagadores:[]}};
 let DB=load();
 function load(){try{const r=localStorage.getItem(KEY);if(r){const d=JSON.parse(r);return{items:d.items||[],cfg:Object.assign({},DEF.cfg,d.cfg||{})}}}catch(e){}return JSON.parse(JSON.stringify(DEF))}
 function save(){try{localStorage.setItem(KEY,JSON.stringify(DB))}catch(e){toast("Não foi possível guardar neste navegador. Use 'Cópia'.")}}
@@ -1252,11 +1270,11 @@ $("#btnUseDl").onclick=()=>setDownloadMode();
 $("#btnBackFS").onclick=async()=>{DB.cfg.saida="pasta";save();await renderFolder();updatePrompt()};
 $("#btnForgetDir").onclick=async()=>{DIR=null;DB.cfg.pastaNome="";save();await kvDel("dir");renderFolder();updatePrompt()};
 
-/* ================= Claude ================= */
+/* ================= IA (Claude ou Codex) ================= */
 let promptEdited=false;
 function antText(){const a=[...DB.cfg.ant].sort((x,y)=>y-x);if(!a.length)return"3 dias antes";return a.map(x=>x===0?"no dia":x===1?"1 dia antes":x+" dias antes").join(" e ")}
 function buildPrompt(){
-  const c=DB.cfg;const pasta=pastaLabel();const modo=c.cModo==="diario"?"diario":"pedir";
+  const c=DB.cfg;const cx=c.cIA==="codex";const pasta=pastaLabel();const modo=c.cModo==="diario"?"diario":"pedir";
   const pend=DB.items.filter(i=>i.status!=="concluido").sort((a,b)=>a.venc.localeCompare(b.venc));
   const pags=(c.pagadores||[]);
   const pagTxt=pags.length?pags.map(p=>`  - ${p.apelido}: ${fmtDoc(p.doc)} → subpasta "${safeName(p.apelido+" - "+String(p.doc).replace(/[^\d*]/g,""))}"`).join("\n"):"  - (nenhum cadastrado: descubra pelos boletos e me pergunte o apelido de cada um)";
@@ -1288,33 +1306,41 @@ d) Acrescente uma linha ao _controle.csv.
 e) Comprovantes: procure também comprovantes de pagamento (emails do banco ou do app com "comprovante", "pagamento realizado", "pagamento efetuado", "Pix enviado", "transferência realizada", ou anexos de comprovante). Associe cada comprovante ao boleto correspondente no _controle.csv: mesma linha digitável ou, se não houver, mesmo beneficiário e valor próximo, pago perto do vencimento. Salve o comprovante na mesma subpasta do boleto, com o mesmo nome do boleto e o final _comprovante (por exemplo 2026-11-25_boleto_condominio_R$850,00_comprovante.pdf). Preencha pago_em, valor_pago e comprovante, e mude a situação para pago. Se não tiver certeza da associação, pergunte. Se eu mandar um comprovante na conversa, faça o mesmo com ele. Avise boletos marcados como pagos que continuam sem comprovante.
 
 O que fazer:
-1. Verifique se o Gmail está conectado. Se não estiver, me ajude a conectar, autorizando somente a leitura, e espere minha autorização.
-2. Verifique se você tem acesso à pasta dos boletos no meu computador. Se não tiver, peça acesso.
+1. ${cx?"Verifique se o plugin do Gmail está instalado e conectado no Codex. Se não estiver, me diga como instalar (Plugins › Gmail) e espere. Mesmo que o plugin tenha permissão de envio, use-o só para ler.":"Verifique se o Gmail está conectado. Se não estiver, me ajude a conectar, autorizando somente a leitura, e espere minha autorização."}
+2. ${cx?"Verifique se a pasta dos boletos está aberta como pasta de trabalho desta conversa. Se não estiver, me diga como abri-la e espere.":"Verifique se você tem acesso à pasta dos boletos no meu computador. Se não tiver, peça acesso."}
 3. Leia o _controle.csv e procure, lidos ou não, os emails ${modo==="pedir"?"recebidos desde o último email registrado nele (se o arquivo não existir, dos últimos 90 dias)":"dos últimos 90 dias"} com boletos ou contas a pagar: anexos PDF com termos como boleto, fatura, vencimento, cobrança, mensalidade, linha digitável; emails com código de barras ou "pague até" no texto; avisos de "novo boleto emitido no seu CPF" do banco. Ignore listas de discussão, propaganda, prestações de contas e notas fiscais.
 4. Leia e confira cada boleto (itens a e b) e procure os comprovantes de pagamento do mesmo período (item e), mas ainda não salve nada.
 5. Mostre a lista agrupada por pagador, com o total de cada um, os alertas e os comprovantes encontrados para cada boleto, e espere eu dizer quais já paguei e se pode salvar.
 6. Depois da minha aprovação, salve os PDFs dos boletos e dos comprovantes e atualize o _controle.csv (itens c, d e e), marcando como pago o que eu disser que já paguei.`;
   if(modo==="pedir")t+=`
-7. Ao terminar, me mostre o que vence nos próximos dias e me lembre de desconectar o Gmail (configurações do Claude › Conectores) se eu não quiser deixar o acesso ativo.`;
+7. Ao terminar, me mostre o que vence nos próximos dias e me lembre de desconectar o Gmail (${cx?"configurações do Codex › Plugins":"configurações do Claude › Conectores"}) se eu não quiser deixar o acesso ativo.`;
   else t+=`
-7. Depois disso, crie uma tarefa agendada diária no horário acima que, a cada execução: procure os emails dos últimos 3 dias (e, se a revisão semanal estiver ligada, dos últimos 30 dias às segundas-feiras); trate os novos boletos e comprovantes como nos itens a a e, sem pedir aprovação (comprovante com associação duvidosa fica para eu confirmar); e me envie um resumo com: alertas de possível fraude, pendentes vencidos, o que vence em até 3 e em até 7 dias, boletos novos, pagamentos confirmados por comprovante, boletos pagos ainda sem comprovante, e contas que costumam chegar todo mês e ainda não chegaram. Se o computador estiver desligado, a tarefa deve mandar o resumo assim mesmo e avisar que os PDFs não foram salvos.
+7. Depois disso, ${cx?"escreva o texto de uma automação diária e me guie para criá-la no Codex (barra lateral › Automações › Nova automação), no horário acima, com a pasta dos boletos anexada. A automação deve, a cada execução:":"crie uma tarefa agendada diária no horário acima que, a cada execução:"} procure os emails dos últimos 3 dias (e, se a revisão semanal estiver ligada, dos últimos 30 dias às segundas-feiras); trate os novos boletos e comprovantes como nos itens a a e, sem pedir aprovação (comprovante com associação duvidosa fica para eu confirmar); e me envie um resumo com: alertas de possível fraude, pendentes vencidos, o que vence em até 3 e em até 7 dias, boletos novos, pagamentos confirmados por comprovante, boletos pagos ainda sem comprovante, e contas que costumam chegar todo mês e ainda não chegaram. Se o computador estiver desligado, a tarefa deve mandar o resumo assim mesmo e avisar que os PDFs não foram salvos.
 8. Quando eu disser que paguei algo, mude a situação daquela linha do _controle.csv para pago e pergunte pelo comprovante, se ele não tiver chegado por email.`;
   if(c.cIncl&&pend.length)t+=`\n\nPendências que já anotei (confira se aparecem no email e inclua as que não aparecerem):\n`+pend.map(i=>`- ${isoToBR(i.venc)} – ${i.descricao}${i.valor!=null?" – "+money(i.valor):""}${pagLabel(i)?" – pagador: "+pagLabel(i):""}${i.debito?" (débito automático)":""}`).join("\n");
   return t;
 }
-const REQ={pedir:["Conta no Claude e o app do Claude no computador.","Um plano que permita conectar o Gmail.","Você acompanha a verificação do começo ao fim; nada roda sozinho depois."],
-  diario:["Conta no Claude e o app do Claude no computador.","Um plano que permita conectar o Gmail e criar tarefas agendadas.","O computador ligado, com o app aberto, no horário do aviso. O Gmail fica conectado, só para leitura."]};
+const REQ={claude:{pedir:["Conta no Claude e o app do Claude no computador.","Um plano que permita conectar o Gmail.","Você acompanha a verificação do começo ao fim; nada roda sozinho depois."],
+  diario:["Conta no Claude e o app do Claude no computador.","Um plano que permita conectar o Gmail e criar tarefas agendadas.","O computador ligado, com o app aberto, no horário do aviso. O Gmail fica conectado, só para leitura."]},
+ codex:{pedir:["Conta paga do ChatGPT e o app do Codex no computador.","O plugin do Gmail instalado no Codex e a pasta dos boletos aberta na conversa.","O plugin do Gmail pode pedir permissão de envio. A instrução proíbe enviar, mas a permissão fica concedida: desconecte o plugin no fim, se preferir.","Você acompanha a verificação do começo ao fim; nada roda sozinho depois."],
+  diario:["Conta paga do ChatGPT, com créditos do Codex (cada execução diária consome créditos).","O app do Codex com o plugin do Gmail e uma automação diária com a pasta dos boletos anexada.","O computador ligado, com o app aberto, no horário do aviso.","O plugin do Gmail pode ter permissão de envio. A instrução proíbe enviar, mas a permissão fica concedida."]}};
+const NOTA={claude:'A instrução aparece já escrita e só é enviada quando você confirmar no Claude. Se o botão não abrir o Claude, use "Copiar instrução".',
+ codex:'Copie a instrução e cole numa conversa nova do Codex, com a pasta dos boletos aberta. O ChatGPT no navegador consegue ler o email e montar a lista, mas não salva os PDFs na sua pasta.'};
 function renderModo(){const m=DB.cfg.cModo||"pedir";document.querySelectorAll("#modes .mode").forEach(b=>b.classList.toggle("on",b.dataset.modo===m));
   $("#mManual").hidden=m!=="manual";$("#mClaude").hidden=m==="manual";
   document.querySelectorAll("#mClaude [data-diario]").forEach(e=>e.hidden=m!=="diario");
-  if(REQ[m])$("#cReq").innerHTML=REQ[m].map(x=>`<li>${esc(x)}</li>`).join("")}
+  const ia=DB.cfg.cIA==="codex"?"codex":"claude";document.querySelectorAll("#ias .mode").forEach(b=>b.classList.toggle("on",b.dataset.ia===ia));
+  document.querySelectorAll("#mClaude [data-ia-only]").forEach(e=>e.hidden=e.dataset.iaOnly!==ia);
+  $("#cCopy").classList.toggle("primary",ia==="codex");$("#cNota").textContent=NOTA[ia];
+  const r=REQ[ia][m];if(r)$("#cReq").innerHTML=r.map(x=>`<li>${esc(x)}</li>`).join("")}
+$("#ias").addEventListener("click",e=>{const b=e.target.closest(".mode");if(!b)return;DB.cfg.cIA=b.dataset.ia;save();promptEdited=false;updatePrompt()});
 function updatePrompt(){renderModo();$("#cPastaTxt").textContent=pastaLabel();if(!promptEdited)$("#cPrompt").value=buildPrompt();syncLinks()}
 $("#modes").addEventListener("click",e=>{const b=e.target.closest(".mode");if(!b)return;DB.cfg.cModo=b.dataset.modo;save();promptEdited=false;updatePrompt()});
-function syncLinks(){const q=encodeURIComponent($("#cPrompt").value.slice(0,12000));$("#cOpenApp").href="claude://claude.ai/new?q="+q;$("#cOpenWeb").href="https://claude.ai/new?q="+q}
+function syncLinks(){const q=encodeURIComponent($("#cPrompt").value.slice(0,12000));$("#cOpenApp").href="claude://claude.ai/new?q="+q;$("#cOpenWeb").href="https://claude.ai/new?q="+q;$("#cOpenGpt").href="https://chatgpt.com/?q="+q}
 ["cHora","cSemanal","cRem","cExc"].forEach(k=>$("#"+k).addEventListener("input",e=>{DB.cfg[k]=e.target.value;save();updatePrompt()}));
 $("#cIncl").addEventListener("change",e=>{DB.cfg.cIncl=e.target.checked;save();updatePrompt()});
 $("#cPrompt").addEventListener("input",()=>{promptEdited=true;syncLinks()});
-$("#cCopy").onclick=async()=>toast(await copy($("#cPrompt").value)?"Instrução copiada. Cole numa conversa nova do Claude.":"Não consegui copiar.");
+$("#cCopy").onclick=async()=>toast(await copy($("#cPrompt").value)?(DB.cfg.cIA==="codex"?"Instrução copiada. Cole numa conversa nova do Codex.":"Instrução copiada. Cole numa conversa nova do Claude."):"Não consegui copiar.");
 
 /* ================= Cópia de segurança ================= */
 $("#btnExport").onclick=async()=>{const name="meus-vencimentos-copia-"+todayISO()+".json";const body=JSON.stringify(DB,null,2);
