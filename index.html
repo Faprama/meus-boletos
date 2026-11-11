@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Meus Vencimentos</title>
+<title>Meus Boletos</title>
 <link rel="icon" href="favicon.ico?v=2" sizes="any">
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png?v=2">
 <link rel="apple-touch-icon" href="apple-touch-icon.png?v=2">
@@ -198,12 +198,13 @@ dialog.man{width:min(860px,calc(100vw - 24px))}
   .cal-side{border-left:none;padding-left:0;border-top:1px solid var(--line);padding-top:10px}
   .bar{font-size:0;padding:0;height:5px;border-left:none}
 }
+.brand{display:flex;align-items:center;gap:10px}.brand img{width:34px;height:34px;flex:none;border-radius:8px}
 </style>
 </head>
 <body>
 <div class="app">
   <header class="top">
-    <h1>Meus Vencimentos</h1>
+    <h1 class="brand"><img src="data:image/png;base64,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" alt="" width="34" height="34">Meus Boletos</h1>
     <div class="stats" id="stats"></div>
     <nav class="tools">
       <button class="primary" id="btnCal">Calendário</button>
@@ -223,7 +224,8 @@ dialog.man{width:min(860px,calc(100vw - 24px))}
         <span class="muted small">ou clique para escolher (também aceita foto)</span>
       </div>
       <input type="file" id="file" accept="application/pdf,image/*" multiple hidden>
-      <div class="row" style="margin-top:8px"><button id="btnManual">+ Adicionar manualmente</button></div>
+      <div class="row" style="margin-top:8px"><button id="btnManual">+ Adicionar manualmente</button><button id="btnCsv" title="Traz para a página os boletos e comprovantes que a IA salvou na pasta">Importar da IA</button></div>
+      <input type="file" id="csvFile" accept=".csv,text/csv" hidden>
       <div class="folder" id="folderBox"></div>
       <div class="scroll" id="reviews"></div>
       <div class="hint" id="hint"><b>Primeira vez?</b> Veja o <a href="#" data-open="dlgManual" style="color:var(--accent)">Manual</a>.<br><br><b>Dica:</b> baixe o PDF do email e arraste-o direto do ícone de downloads do Chrome (no alto, à direita) para a área acima.<br><br>Os arquivos são lidos neste computador e não são enviados para lugar nenhum. Confira data, valor e pagador antes de salvar.</div>
@@ -352,7 +354,7 @@ dialog.man{width:min(860px,calc(100vw - 24px))}
       <p class="small" style="margin:10px 0 6px"><b>Qual IA?</b></p>
       <div class="modes ias" id="ias">
         <button class="mode" data-ia="claude"><b>Claude</b><span>App do Claude no computador, com o Gmail conectado e a pasta dos boletos.</span></button>
-        <button class="mode" data-ia="codex"><b>Codex / ChatGPT</b><span>App do Codex no computador, com o plugin do Gmail e a pasta dos boletos.</span></button>
+        <button class="mode" data-ia="codex"><b>Codex/ChatGPT</b><span>App do Codex no computador, com o plugin do Gmail e a pasta dos boletos.</span></button>
       </div>
       <ul class="req small" id="cReq"></ul>
       <div class="grid">
@@ -393,18 +395,19 @@ dialog.man{width:min(860px,calc(100vw - 24px))}
 
 <!-- Manual -->
 <dialog class="man" id="dlgManual"><div class="dlg">
-  <div class="dlg-h"><h2>Manual – Meus Vencimentos</h2><button class="ghost" data-close>Fechar ✕</button></div>
-  <div class="dlg-b"><nav class="mtoc"><a href="#m-para-que-serve">Para que serve</a><a href="#m-trs-modos-de-uso">Três modos de uso</a><a href="#m-primeiros-passos-5-minutos">Primeiros passos (5 minutos)</a><a href="#m-uso-no-dia-a-dia">Uso no dia a dia</a><a href="#m-usar-com-o-claude-modos-2-e-3">Usar com o Claude (modos 2 e 3)</a><a href="#m-usar-com-o-codex-chatgpt">Codex / ChatGPT</a><a href="#m-privacidade-e-segurana">Privacidade e segurança</a><a href="#m-problemas-comuns">Problemas comuns</a></nav><div class="manual"><h2 id="m-para-que-serve">Para que serve</h2>
-<p>O Meus Vencimentos é uma página gratuita para não esquecer boletos e prazos. Ela evita a multa por atraso.</p>
-<p>Você coloca os boletos na página. Ela lê o vencimento e o valor direto do código do boleto e organiza tudo por data. Também guarda o PDF com um nome organizado e manda lembretes para a agenda do celular.</p>
+  <div class="dlg-h"><h2>Manual – Meus Boletos</h2><button class="ghost" data-close>Fechar ✕</button></div>
+  <div class="dlg-b"><nav class="mtoc"><a href="#m-para-que-serve">Para que serve</a><a href="#m-trs-modos-de-uso">Três modos de uso</a><a href="#m-primeiros-passos">Primeiros passos</a><a href="#m-uso-no-dia-a-dia">Uso no dia a dia</a><a href="#m-usar-com-ia-modos-2-e-3">Usar com IA (modos 2 e 3)</a><a href="#m-com-o-claude">Com o Claude</a><a href="#m-com-o-codex-chatgpt">Com o Codex/ChatGPT</a><a href="#m-privacidade-e-segurana">Privacidade e segurança</a><a href="#m-problemas-comuns">Problemas comuns</a></nav><div class="manual"><h2 id="m-para-que-serve">Para que serve</h2>
+<p>O Meus Boletos é uma página web, publicada no GitHub Pages, para organizar boletos, valores, prazos e comprovantes de pagamento.</p>
+<p>Você, ou sua IA preferida, coloca os boletos na página web. A página lê o vencimento e o valor direto do código do boleto e organiza tudo por data. Também guarda o PDF com um nome organizado e manda lembretes para a agenda do celular. De acordo com seu interesse, ela pode salvar de maneira organizada os comprovantes de pagamentos.</p>
 <ul>
-<li><strong>Endereço:</strong> <a href="https://faprama.github.io/meus-vencimentos/" target="_blank" rel="noopener">faprama.github.io/meus-vencimentos</a></li>
-<li><strong>Custo:</strong> nenhum.</li>
+<li><strong>Endereço:</strong> <a target="_blank" rel="noopener" href="https://faprama.github.io/meus-boletos/">faprama.github.io/meus-boletos</a></li>
+<li><strong>Custo:</strong> muito mais barato do que as multas.</li>
 <li><strong>Instalação:</strong> não precisa instalar nada.</li>
-<li><strong>Navegador:</strong> funciona no Chrome e no Edge, no computador.</li>
+<li><strong>Navegador:</strong> testado no Chrome, mas deve funcionar em outros navegadores.</li>
+<li><strong>Comprovantes junto dos boletos:</strong> cada comprovante de pagamento fica guardado ao lado do seu boleto, na mesma pasta e com o mesmo nome, terminado em <code>_comprovante</code>. Veja “Comprovantes: cada um junto do seu boleto”, em Uso no dia a dia.</li>
 </ul>
 <h2 id="m-trs-modos-de-uso">Três modos de uso</h2>
-<p>Escolha quanto acesso quer dar à IA. Os três usam a mesma página, e dá para trocar de modo quando quiser, no botão <strong>IA</strong>. Nos modos 2 e 3, você escolhe também a IA: <strong>Claude</strong> ou <strong>Codex / ChatGPT</strong>.</p>
+<p>Escolha quanto acesso quer dar à IA. As opções são: nunca, agora ou sempre. Dá para trocar de opção a qualquer momento, pelo botão <strong>IA</strong>. Nas opções Agora e Sempre, você escolhe também qual IA usar: <strong>Claude</strong> ou <strong>Codex/ChatGPT</strong>.</p>
 <table>
 <thead>
 <tr>
@@ -418,24 +421,24 @@ dialog.man{width:min(860px,calc(100vw - 24px))}
 <tr>
 <td>Acesso ao email</td>
 <td>Nenhum</td>
-<td>Só durante a conversa que você abriu</td>
-<td>Contínuo, somente leitura</td>
+<td>Só quando você pede, numa conversa que você abriu</td>
+<td>Contínuo, para a leitura diária</td>
 </tr>
 <tr>
 <td>Quem dispara</td>
 <td>Você arrasta os PDFs</td>
-<td>Você abre o Claude e pede a verificação</td>
-<td>Uma tarefa agendada, todo dia</td>
+<td>Você abre a IA e pede a verificação</td>
+<td>Uma tarefa agendada</td>
 </tr>
 <tr>
-<td>Precisa de conta no Claude</td>
+<td>Precisa de conta numa IA</td>
 <td>Não</td>
 <td>Sim</td>
 <td>Sim, com plano que permita tarefas agendadas</td>
 </tr>
 <tr>
 <td>Onde o PDF fica</td>
-<td>Pasta escolhida no "Salvar como"</td>
+<td>Pasta escolhida no “Salvar como”</td>
 <td>Subpasta de cada pagador</td>
 <td>Subpasta de cada pagador</td>
 </tr>
@@ -447,49 +450,58 @@ dialog.man{width:min(860px,calc(100vw - 24px))}
 </tr>
 <tr>
 <td>Comprovantes</td>
-<td>Você anexa ao clicar em "Paguei"</td>
-<td>O Claude procura no email e associa ao boleto</td>
+<td>Você anexa ao clicar em <strong>Paguei</strong></td>
+<td>A IA procura no email e associa ao boleto. Você pode também anexar, como no modo 1</td>
 <td>Igual ao modo 2, todo dia</td>
 </tr>
 <tr>
 <td>Avisos</td>
 <td>Lembretes na agenda do celular</td>
-<td>O que vence, mostrado na própria conversa</td>
-<td>Resumo diário no celular</td>
+<td>Lembretes na agenda, mais o que vence mostrado na conversa</td>
+<td>Lembretes na agenda, mais um resumo diário</td>
 </tr>
 <tr>
 <td>Trabalho seu</td>
 <td>Salvar o PDF do email e arrastar para a página</td>
-<td>Conectar, conferir a lista e desconectar</td>
+<td>Pedir, conferir a lista e aprovar</td>
 <td>Ler o resumo e avisar quando pagar</td>
 </tr>
 </tbody>
 </table>
-<h2 id="m-primeiros-passos-5-minutos">Primeiros passos (5 minutos)</h2>
+<h2 id="m-primeiros-passos">Primeiros passos</h2>
 <ol>
-<li><strong>Abra a página:</strong> entre em <strong>https://faprama.github.io/meus-vencimentos/</strong> no Chrome ou no Edge e salve o endereço nos favoritos.</li>
+<li><strong>Abra a página:</strong> entre em <a target="_blank" rel="noopener" href="https://faprama.github.io/meus-boletos/">faprama.github.io/meus-boletos</a> no Chrome e salve o endereço nos favoritos.</li>
 <li><strong>Crie uma pasta para os boletos:</strong> por exemplo, <code>Documentos\Boletos</code>.</li>
-<li><strong>Configure o navegador para perguntar onde salvar:</strong> abra <code>chrome://settings/downloads</code> (no Edge, <code>edge://settings/downloads</code>) e ligue <strong>Perguntar onde salvar cada arquivo</strong>. Na primeira vez, escolha a pasta Boletos. Depois disso, o navegador já abre nessa pasta. Assim, os outros downloads continuam indo para onde iam antes.</li>
+<li><strong>Configure o navegador para perguntar onde salvar:</strong> abra <a href="chrome://settings/downloads" class="uri">chrome://settings/downloads</a> e ligue <strong>Perguntar onde salvar cada arquivo</strong>. Na primeira vez, escolha a pasta Boletos. Depois disso, o navegador já abre nessa pasta. Assim, os outros downloads continuam indo para onde iam antes.</li>
 <li><strong>Informe a pasta na página:</strong> clique em <strong>Pasta</strong> e digite o caminho da sua pasta de boletos. Isso serve só para referência: quem decide onde o arquivo vai é o navegador.</li>
-<li><strong>Cadastre os pagadores:</strong> ainda na janela <strong>Pasta</strong>, em <strong>Pagadores</strong>, adicione o CPF ou CNPJ de quem paga e um apelido, como "Ana", "Empresa A" ou "Empresa B". Isso é útil para famílias que dividem as contas e para empresas com mais de um CNPJ. Você também pode pular este passo: a página pede o apelido no primeiro boleto de cada pagador.</li>
+<li><strong>Cadastre os pagadores:</strong> ainda na janela <strong>Pasta</strong>, em <strong>Pagadores</strong>, adicione o CPF ou CNPJ de quem paga e um apelido, como “Ana”, “Empresa A” ou “Empresa B”. Pagador é quem deve pagar o boleto, identificado pelo CPF (pessoa) ou CNPJ (empresa). Isso é útil para famílias que dividem as contas e para empresas com mais de um CNPJ. Você também pode pular este passo: a página pede o apelido no primeiro boleto de cada pagador.</li>
 </ol>
 <h2 id="m-uso-no-dia-a-dia">Uso no dia a dia</h2>
-<h3>Quando chega um boleto</h3>
+<h3 id="m-quando-chega-um-boleto">Quando chega um boleto</h3>
 <ol>
 <li><strong>Baixe o PDF:</strong> baixe o anexo do email para qualquer lugar. Pode ser a pasta Downloads.</li>
 <li><strong>Arraste para a página:</strong> arraste o arquivo para a área <strong>Arraste aqui os PDFs</strong>. Ele pode vir direto do ícone de downloads do navegador ou da área de trabalho.</li>
-<li><strong>Confira os dados:</strong> a página preenche vencimento, valor, beneficiário e pagador. Confira e corrija o que for preciso. PDFs escaneados também são lidos, mas demoram alguns segundos a mais.</li>
+<li><strong>Confira os dados:</strong> a página preenche vencimento, valor, beneficiário e pagador. Confira e corrija o que for preciso. PDFs escaneados também são lidos, mas a leitura é mais lenta.</li>
 <li><strong>Salve:</strong> clique em <strong>Salvar</strong>. O navegador pergunta onde guardar o arquivo, já com o nome organizado. Por exemplo: <code>2026-11-25_boleto_condominio_R$850,00_ana.pdf</code>.</li>
 </ol>
 <p>Se o boleto não tiver PDF, use <strong>+ Adicionar manualmente</strong>. Cole o código do boleto, e a página lê o vencimento e o valor sozinha.</p>
-<h3>Pagar e guardar o comprovante</h3>
+<h3 id="m-pagar-e-guardar-o-comprovante">Pagar e guardar o comprovante</h3>
 <ul>
 <li><strong>Copiar código:</strong> copia a linha digitável para colar no app do banco. O ideal é já <strong>agendar</strong> o pagamento para a data de vencimento.</li>
 <li><strong>Paguei:</strong> abre a janela de pagamento. Confira a data e o valor pago e arraste o <strong>comprovante</strong>, em PDF ou foto do app do banco. A página lê o comprovante, preenche a data e o valor e confere se o código do boleto no comprovante é o mesmo do boleto. Ao confirmar, o boleto vai para a aba <strong>Concluídos</strong>.</li>
 <li><strong>Onde o comprovante fica:</strong> ele é salvo ao lado do boleto, com o mesmo nome e o final <code>_comprovante</code>. Por exemplo: <code>2026-11-25_boleto_condominio_R$850,00_comprovante.pdf</code>.</li>
-<li><strong>Anexar depois:</strong> se pagou e ainda não tem o comprovante, confirme sem ele. Na aba <strong>Concluídos</strong>, os itens aparecem como "sem comprovante", com o botão <strong>Anexar comprovante</strong>.</li>
+<li><strong>Anexar depois:</strong> se pagou e ainda não tem o comprovante, confirme sem ele. Na aba <strong>Concluídos</strong>, os itens aparecem como “sem comprovante”, com o botão <strong>Anexar comprovante</strong>.</li>
 </ul>
-<h3>Ver o mês</h3>
+<h3 id="m-comprovantes-cada-um-junto-do-seu-boleto">Comprovantes: cada um junto do seu boleto</h3>
+<p>Guardar o comprovante é opcional, mas recomendado: se a empresa cobrar de novo, você encontra a prova do pagamento em segundos. A página e a IA seguem a mesma regra, para que cada comprovante fique sempre associado ao seu boleto:</p>
+<ul>
+<li><strong>Mesma pasta:</strong> o comprovante fica na mesma pasta do boleto (no modo 1, a pasta que você escolher; nos modos 2 e 3, a subpasta do pagador).</li>
+<li><strong>Mesmo nome:</strong> o nome do comprovante é o nome do boleto mais o final <code>_comprovante</code>. Assim, no Explorador de Arquivos, os dois aparecem um embaixo do outro: <code>2026-11-25_boleto_condominio_R$850,00.pdf</code><br />
+<code>2026-11-25_boleto_condominio_R$850,00_comprovante.pdf</code></li>
+<li><strong>Na página:</strong> na aba <strong>Concluídos</strong>, cada boleto pago mostra a data do pagamento e “comprovante” ou “sem comprovante”.</li>
+<li><strong>No arquivo de controle (modos 2 e 3):</strong> a IA anota na linha do boleto a data, o valor pago e o nome do arquivo do comprovante.</li>
+</ul>
+<h3 id="m-ver-o-mês">Ver o mês</h3>
 <p>O botão <strong>Calendário</strong> mostra o mês em grade, com cores para cada situação:</p>
 <ul>
 <li><strong>Vermelho:</strong> vencido.</li>
@@ -498,76 +510,105 @@ dialog.man{width:min(860px,calc(100vw - 24px))}
 <li><strong>Verde:</strong> pago.</li>
 </ul>
 <p>Quanto mais forte o fundo do dia, maior o valor a pagar naquele dia. Clique num dia para ver cada pagamento e o total do dia. O seletor <strong>Todos os pagadores</strong> filtra a lista e o calendário por pagador.</p>
-<h3>Lembretes no celular</h3>
+<h3 id="m-lembretes-no-celular">Lembretes no celular</h3>
 <ul>
 <li><strong>Agenda:</strong> o botão <strong>Agenda</strong> de cada boleto cria o lembrete no Google Agenda.</li>
 <li><strong>Baixar lembretes (.ics):</strong> gera um arquivo com todos os pendentes, para o iPhone ou para importar em outra agenda.</li>
 <li><strong>Antecedência:</strong> em <strong>Lembretes</strong>, escolha quantos dias antes quer ser avisado.</li>
 </ul>
-<h3>Cópia de segurança</h3>
+<h3 id="m-cópia-de-segurança">Cópia de segurança</h3>
 <p>A lista fica guardada <strong>só no navegador</strong> em que foi feita. Se você trocar de computador ou limpar os dados do navegador, ela some. Use <strong>Cópia › Salvar cópia</strong> de vez em quando, por exemplo uma vez por mês, e <strong>Restaurar cópia</strong> no outro computador.</p>
-<h2 id="m-usar-com-o-claude-modos-2-e-3">Usar com o Claude (modos 2 e 3)</h2>
-<p>O Claude lê o email, encontra os boletos, confere cada um e salva o PDF na pasta do pagador. Ele trabalha só com permissão de leitura: nunca envia, apaga, move nem marca emails, e nunca faz pagamentos.</p>
-<h3>O que é preciso</h3>
+<h2 id="m-usar-com-ia-modos-2-e-3">Usar com IA (modos 2 e 3)</h2>
+<h3 id="m-a-ideia">A ideia</h3>
+<p>Nos modos 2 e 3, uma IA faz o trabalho de buscar os boletos por você. Ela funciona como um assistente com acesso de leitura ao seu email e a uma pasta do seu computador:</p>
+<ol>
+<li><strong>Lê o email:</strong> encontra os emails com boletos e com comprovantes de pagamento.</li>
+<li><strong>Confere cada boleto:</strong> valida o código, compara o valor e o vencimento com o que está impresso e procura sinais de boleto falso.</li>
+<li><strong>Mostra a lista:</strong> agrupa os boletos por pagador, com os totais e os alertas, e espera a sua aprovação.</li>
+<li><strong>Organiza a pasta:</strong> salva cada PDF na subpasta do pagador, com o nome organizado, e anota tudo no arquivo de controle.</li>
+</ol>
+<p>A página não conversa com a IA. Ela só monta a <strong>instrução</strong>: um texto com as suas preferências, os seus pagadores e as regras de segurança. Você leva esse texto para a IA e acompanha o trabalho. A IA trabalha na sua própria conta, com o seu email e a sua pasta. Os dados não passam pela conta de quem indicou a página.</p>
+<h3 id="m-o-que-é-preciso-em-qualquer-ia">O que é preciso, em qualquer IA</h3>
+<ul>
+<li><strong>Conta e app:</strong> uma conta na IA escolhida e o app dela instalado no computador. É o app que consegue salvar arquivos na sua pasta.</li>
+<li><strong>Acesso ao Gmail:</strong> a IA precisa ser conectada ao Gmail.</li>
+<li><strong>Acesso à pasta:</strong> a pasta Boletos precisa estar aberta no app da IA.</li>
+<li><strong>Plano:</strong> um plano que permita conectar o Gmail. Para o modo 3, também é preciso poder criar tarefas agendadas.</li>
+</ul>
+<h3 id="m-modo-2-agora">Modo 2: Agora</h3>
+<ol>
+<li><strong>Monte a instrução:</strong> na página, clique em <strong>IA</strong>, escolha <strong>2. Agora</strong> e a IA que você usa. Confira a instrução.</li>
+<li><strong>Leve a instrução para a IA:</strong> abra o app da IA com a instrução já escrita ou copie e cole numa conversa nova. Confira e envie.</li>
+<li><strong>Conecte o Gmail:</strong> se ainda não estiver conectado, conecte quando a IA pedir.</li>
+<li><strong>Confira a lista:</strong> a IA procura os emails desde a última verificação registrada (na primeira vez, dos últimos 90 dias) e mostra a lista. Nada é salvo antes de você responder quais já estão pagos.</li>
+<li><strong>Aprove:</strong> a IA salva os PDFs e atualiza o arquivo de controle.</li>
+<li><strong>Desconecte o Gmail (opcional):</strong> se não quiser deixar o acesso ativo, desconecte o Gmail no app da IA. O acesso também pode ser removido pela conta Google, em <strong>Segurança › Apps de terceiros com acesso à conta</strong>. Na próxima vez, conecte de novo.</li>
+</ol>
+<p>Nada roda sozinho nesse modo.</p>
+<p><strong>Uma variante prática.</strong> Conectar e desconectar o Gmail a cada verificação dá trabalho. Uma alternativa menos trabalhosa é deixar a autorização <strong>sempre conectada</strong>, mas sem tarefa agendada. A IA continua lendo o email <strong>só quando você pede</strong>, numa conversa que você abriu e acompanha. A diferença é que você pula os passos 3 e 6. Em troca, o acesso fica disponível em qualquer conversa sua com a IA. Se preferir fechar essa porta depois, basta desconectar o Gmail.</p>
+<h3 id="m-modo-3-sempre">Modo 3: Sempre</h3>
+<ol>
+<li><strong>Monte a instrução:</strong> em <strong>IA</strong>, escolha <strong>3. Sempre</strong>, a IA que você usa e o horário do aviso.</li>
+<li><strong>Primeira verificação:</strong> leve a instrução para a IA, conecte o Gmail e confira a primeira lista, como no modo 2.</li>
+<li><strong>Tarefa diária:</strong> depois da sua aprovação, a IA cria a tarefa agendada, ou guia você para criá-la.</li>
+</ol>
+<p>Depois disso:</p>
+<ul>
+<li><strong>Busca diária:</strong> todo dia, a IA olha os emails dos últimos 3 dias. Assim, um dia perdido é coberto no seguinte.</li>
+<li><strong>Revisão semanal:</strong> toda segunda-feira, ela revisa os últimos 30 dias.</li>
+<li><strong>Resumo:</strong> alertas, vencidos, o que vence em até 3 e em até 7 dias, boletos novos, pagamentos confirmados por comprovante e contas que costumam chegar e ainda não chegaram.</li>
+<li><strong>Verificação fora de hora:</strong> se precisar de uma verificação antes do horário, peça “verifique meus boletos agora”.</li>
+</ul>
+<h3 id="m-nos-dois-modos">Nos dois modos</h3>
+<ul>
+<li><strong>Pastas por pagador:</strong> cada boleto vai para a subpasta do pagador, por exemplo <code>Boletos\Ana - 12345678909</code>, com o nome organizado pela data.</li>
+<li><strong>Arquivo de controle:</strong> o arquivo <code>_controle.csv</code>, na raiz da pasta, abre no Excel. Ele registra beneficiário, CNPJ, pagador, vencimento, valor, código, situação, data do pagamento e comprovante de cada boleto. É por ele que a IA sabe o que já tratou, sem precisar marcar nada no seu email.</li>
+<li><strong>Comprovantes:</strong> a IA procura no email os comprovantes enviados pelo banco (“comprovante”, “pagamento realizado”, “Pix enviado”) e associa cada um ao boleto certo, pelo código ou pelo beneficiário e valor. Ela salva o comprovante ao lado do boleto, com o final <code>_comprovante</code>, e marca o boleto como pago no arquivo de controle. Se a associação for duvidosa, ela pergunta.</li>
+<li><strong>Ao pagar:</strong> avise a IA, por exemplo “paguei o condomínio”. Se o comprovante não chegar por email, envie o arquivo na conversa.</li>
+<li><strong>Trazer para a página:</strong> clique em <strong>Importar da IA</strong>, ao lado de <strong>+ Adicionar manualmente</strong>, e escolha o <code>_controle.csv</code> (ou arraste o arquivo para a página). Os boletos e comprovantes que a IA salvou entram na lista, no calendário e nos lembretes da agenda. Pode importar quantas vezes quiser: o que já está na página não é duplicado.</li>
+</ul>
+<h3 id="m-o-que-a-ia-não-resolve-sozinha">O que a IA não resolve sozinha</h3>
+<ul>
+<li><strong>PDF com senha:</strong> muitos usam parte do CPF do titular como senha. Informe a regra de senha à IA. Sem ela, a IA usa os dados do texto do email.</li>
+<li><strong>Boleto só no site:</strong> quando o email diz “sua fatura está disponível no site”, a IA avisa, mas você precisa baixar a fatura.</li>
+<li><strong>Pagamentos:</strong> a IA nunca paga nada. Ela só avisa.</li>
+</ul>
+<h2 id="m-com-o-claude">Com o Claude</h2>
+<h3 id="m-o-que-é-preciso">O que é preciso</h3>
 <ul>
 <li><strong>Conta e app:</strong> conta no Claude e o app do Claude instalado no computador.</li>
 <li><strong>Plano:</strong> um plano que permita conectar o Gmail. Para o modo 3, também é preciso poder criar tarefas agendadas.</li>
 <li><strong>Pasta conectada:</strong> no app do Claude, clique no <strong>+</strong> ao lado da caixa de mensagem, escolha <strong>Adicionar pasta</strong> e selecione a pasta Boletos. Pastas no OneDrive funcionam normalmente.</li>
 </ul>
-<h3>Modo 2: Agora (quando eu pedir)</h3>
-<ol>
-<li><strong>Monte a instrução:</strong> na página, clique em <strong>IA</strong>, escolha <strong>2. Agora</strong> e <strong>Claude</strong>. Clique em <strong>Abrir no app do Claude</strong>: a instrução aparece já escrita. Confira e envie.</li>
-<li><strong>Conecte o Gmail:</strong> quando o Claude pedir, conecte o Gmail e autorize <strong>somente a leitura</strong>.</li>
-<li><strong>Confira a lista:</strong> o Claude procura os emails desde a última verificação registrada (na primeira vez, dos últimos 90 dias). Ele mostra uma lista agrupada por pagador, com totais e alertas. Nada é salvo antes de você responder quais já estão pagos.</li>
-<li><strong>Aprove:</strong> o Claude salva os PDFs e atualiza o arquivo de controle.</li>
-<li><strong>Desconecte o Gmail (opcional):</strong> nas configurações do Claude, em <strong>Conectores</strong>, desconecte o Gmail. O acesso também pode ser removido pela conta Google, em <strong>Segurança › Apps de terceiros com acesso à conta</strong>. Na próxima vez, conecte de novo.</li>
-</ol>
-<p>Nada roda sozinho nesse modo. Com o Gmail desconectado, nenhuma conversa do Claude consegue ler o seu email.</p>
-<p><strong>Variante menos trabalhosa:</strong> deixe o Gmail sempre conectado, sem tarefa agendada. O Claude continua lendo o email só quando você pede, numa conversa que você abriu. Você pula os passos de conectar e desconectar; em troca, o acesso fica disponível em qualquer conversa sua com o Claude.</p>
-<h3>Modo 3: Sempre (todo dia)</h3>
-<ol>
-<li><strong>Monte a instrução:</strong> em <strong>IA</strong>, escolha <strong>3. Sempre</strong> e <strong>Claude</strong>, defina o horário do aviso e clique em <strong>Abrir no app do Claude</strong>.</li>
-<li><strong>Conecte e confira:</strong> conecte o Gmail (somente leitura) e confira a primeira lista, como no modo 2.</li>
-<li><strong>Tarefa diária:</strong> depois da sua aprovação, o Claude cria a tarefa agendada. Ela aparece na lista de tarefas agendadas do app.</li>
-</ol>
-<p>Depois disso:</p>
+<h3 id="m-passo-a-passo">Passo a passo</h3>
 <ul>
-<li><strong>Busca diária:</strong> todo dia, o Claude olha os emails dos últimos 3 dias. Assim, um dia perdido é coberto no seguinte.</li>
-<li><strong>Revisão semanal:</strong> toda segunda-feira, ele revisa os últimos 30 dias.</li>
-<li><strong>Computador desligado:</strong> se o computador estiver desligado no horário, o Claude manda o resumo mesmo assim e avisa que os PDFs não foram salvos.</li>
-<li><strong>Verificação fora de hora:</strong> se precisar de uma verificação antes do horário, peça "verifique meus boletos agora".</li>
+<li><strong>Abrir:</strong> em <strong>IA</strong>, escolha o modo e <strong>Claude</strong>. Clique em <strong>Abrir no app do Claude</strong>: a instrução aparece já escrita. Se o botão não abrir o app, use <strong>Copiar instrução</strong>.</li>
+<li><strong>Gmail:</strong> o Claude pede para conectar o Gmail. Autorize <strong>somente a leitura</strong>.</li>
+<li><strong>Desconectar:</strong> nas configurações do Claude, em <strong>Conectores</strong>, desconecte o Gmail.</li>
+<li><strong>Modo 3:</strong> o próprio Claude cria a tarefa agendada, que aparece na lista de tarefas agendadas do app. Se o computador estiver desligado no horário, o Claude manda o resumo mesmo assim e avisa que os PDFs não foram salvos.</li>
 </ul>
-<h3>Nos dois modos</h3>
+<h2 id="m-com-o-codex-chatgpt">Com o Codex/ChatGPT</h2>
+<h3 id="m-o-que-é-preciso-1">O que é preciso</h3>
 <ul>
-<li><strong>Pastas por pagador:</strong> cada boleto vai para a subpasta do pagador, por exemplo <code>Boletos\Ana - 12345678909</code>, com o nome organizado pela data.</li>
-<li><strong>Arquivo de controle:</strong> o arquivo <strong>_controle.csv</strong>, na raiz da pasta, abre no Excel. Ele registra beneficiário, CNPJ, pagador, vencimento, valor, código e situação de cada boleto. É por ele que o Claude sabe o que já tratou, sem precisar marcar nada no seu email.</li>
-<li><strong>Comprovantes:</strong> o Claude procura no email os comprovantes enviados pelo banco ("comprovante", "pagamento realizado", "Pix enviado") e associa cada um ao boleto certo, pelo código ou pelo beneficiário e valor. Ele salva o comprovante ao lado do boleto, com o final <code>_comprovante</code>, e marca o boleto como pago no arquivo de controle. Se a associação for duvidosa, ele pergunta.</li>
-<li><strong>Ao pagar:</strong> avise o Claude, por exemplo "paguei o condomínio". Se o comprovante não chegar por email, envie o arquivo na conversa.</li>
+<li><strong>Conta e app:</strong> conta paga do ChatGPT e o app do Codex, da OpenAI, instalado no computador.</li>
+<li><strong>Gmail:</strong> o plugin do Gmail instalado no Codex, em <strong>Plugins › Gmail</strong>.</li>
+<li><strong>Pasta:</strong> a pasta Boletos aberta no Codex, para ele poder salvar os PDFs e o <code>_controle.csv</code>.</li>
 </ul>
-<h3>O que o Claude não resolve sozinho</h3>
+<h3 id="m-passo-a-passo-1">Passo a passo</h3>
 <ul>
-<li><strong>PDF com senha:</strong> muitos usam parte do CPF do titular como senha. Informe a regra de senha ao Claude. Sem ela, ele usa os dados do texto do email.</li>
-<li><strong>Boleto só no site:</strong> quando o email diz "sua fatura está disponível no site", o Claude avisa, mas você precisa baixar a fatura.</li>
-<li><strong>Pagamentos:</strong> o Claude nunca paga nada. Ele só avisa.</li>
-</ul>
-<h2 id="m-usar-com-o-codex-chatgpt">Usar com o Codex / ChatGPT</h2>
-<p>Quem usa o ChatGPT pode fazer o mesmo com o <strong>app do Codex</strong>, da OpenAI. A instrução é a mesma, com os passos adaptados.</p>
-<ul>
-<li><strong>O que é preciso:</strong> conta paga do ChatGPT, o app do Codex no computador e o plugin do Gmail instalado no Codex (<strong>Plugins › Gmail</strong>).</li>
-<li><strong>Pasta:</strong> abra a pasta dos boletos no Codex, para ele poder salvar os PDFs e o <strong>_controle.csv</strong>.</li>
-<li><strong>Modo 2 (Agora):</strong> em <strong>IA</strong>, escolha <strong>2. Agora</strong> e <strong>Codex / ChatGPT</strong>, clique em <strong>Copiar instrução</strong> e cole numa conversa nova do Codex.</li>
-<li><strong>Modo 3 (Sempre):</strong> escolha <strong>3. Sempre</strong>. Depois da primeira verificação, o Codex escreve o texto da automação e guia você para criá-la em <strong>Automações › Nova automação</strong>, com a pasta dos boletos anexada. Cada execução consome créditos do Codex.</li>
+<li><strong>Abrir:</strong> em <strong>IA</strong>, escolha o modo e <strong>Codex/ChatGPT</strong>. Clique em <strong>Copiar instrução</strong> e cole numa conversa nova do Codex.</li>
+<li><strong>Modo 3:</strong> depois da primeira verificação, o Codex escreve o texto da automação e guia você para criá-la em <strong>Automações › Nova automação</strong>, com a pasta Boletos anexada. Cada execução consome créditos do Codex.</li>
 <li><strong>Permissões:</strong> o plugin do Gmail do Codex pode pedir permissão de envio. A instrução proíbe enviar, responder ou apagar emails, mas a permissão fica concedida. Se isso incomoda, desconecte o plugin no fim de cada verificação.</li>
-<li><strong>ChatGPT no navegador:</strong> o botão <strong>Abrir o ChatGPT no navegador</strong> serve para consultar: ele lê o email e monta a lista, mas não salva os PDFs na sua pasta.</li>
+<li><strong>ChatGPT no navegador:</strong> o botão <strong>Abrir o ChatGPT no navegador</strong> serve para consultar. Ele lê o email e monta a lista, mas não salva os PDFs na sua pasta.</li>
 </ul>
 <h2 id="m-privacidade-e-segurana">Privacidade e segurança</h2>
 <ul>
 <li><strong>Na página:</strong> os boletos são lidos no seu próprio computador e não são enviados para lugar nenhum. A lista, os pagadores e os CPFs ficam só no seu navegador. Cada pessoa que usa o link tem a sua própria lista, e ninguém vê a lista de ninguém.</li>
-<li><strong>Com o Claude:</strong> você escolhe o nível de acesso: nenhum (modo 1), só durante a verificação (modo 2) ou contínuo (modo 3). O Claude trabalha na sua conta, com o seu email e a sua pasta. Os dados não passam pela conta de quem indicou a página.</li>
-<li><strong>Permissões:</strong> basta autorizar a leitura do email. O Claude não envia, não apaga e não move mensagens, e nunca faz pagamentos.</li>
+<li><strong>Com a IA:</strong> você escolhe o nível de acesso: nenhum (modo 1), só quando você pede (modo 2) ou contínuo (modo 3). A IA trabalha na sua conta, com o seu email e a sua pasta.</li>
+<li><strong>Permissões:</strong> a instrução proíbe a IA de enviar, responder, apagar ou mover emails e de fazer pagamentos. Sempre que a IA permitir, autorize só a leitura do email.</li>
 </ul>
-<h3>Sinais de boleto falso</h3>
-<p>A página valida o código do boleto. O Claude, quando usado, confere também os itens abaixo. Desconfie e não pague se:</p>
+<h3 id="m-sinais-de-boleto-falso">Sinais de boleto falso</h3>
+<p>A página valida o código do boleto. A IA, quando usada, confere também os itens abaixo. Desconfie e não pague se:</p>
 <ul>
 <li><strong>Código:</strong> o código não confere, ou o valor e o vencimento do código são diferentes dos impressos.</li>
 <li><strong>Beneficiário:</strong> o beneficiário, ou o CNPJ dele, não é a empresa que mandou o email.</li>
@@ -592,39 +633,47 @@ dialog.man{width:min(860px,calc(100vw - 24px))}
 </tr>
 <tr>
 <td>O PDF foi para a pasta errada</td>
-<td>O navegador abre na última pasta usada em qualquer download. Volte até a pasta Boletos na janela "Salvar como".</td>
+<td>O navegador abre na última pasta usada em qualquer download. Volte até a pasta Boletos na janela “Salvar como”.</td>
 </tr>
 <tr>
 <td>A página não achou o vencimento ou o valor</td>
 <td>Cole o código do boleto (linha digitável) no campo próprio, ou preencha à mão. Contas de água, luz e telefone não trazem o vencimento no código.</td>
 </tr>
 <tr>
-<td>Aparece "Este código não confere"</td>
+<td>Aparece “Este código não confere”</td>
 <td>Algum número foi copiado errado. Se o código veio do próprio boleto, desconfie e confirme com quem emitiu.</td>
 </tr>
 <tr>
 <td>O PDF escaneado demora</td>
-<td>Na primeira vez, a página baixa o leitor de texto, com cerca de 5 MB. Depois fica mais rápido.</td>
+<td>Na primeira vez, a página baixa o leitor de texto, com cerca de 5 MB. Depois fica mais rápido.</td>
 </tr>
 <tr>
-<td>"Escolher pasta" não funciona</td>
+<td>“Escolher pasta” não funciona</td>
 <td>Em alguns computadores, o navegador bloqueia a gravação direta em pasta. Use os downloads do navegador, que são o padrão da página.</td>
-</tr>
-<tr>
-<td>O Claude não mandou o resumo do dia (modo 3)</td>
-<td>Veja se o computador estava ligado e com o app aberto. Peça "verifique meus boletos agora".</td>
-</tr>
-<tr>
-<td>Não quero deixar o email conectado</td>
-<td>Use o modo 2: conecte o Gmail só durante a verificação e desconecte no final.</td>
 </tr>
 <tr>
 <td>Paguei e não anexei o comprovante</td>
 <td>Na aba <strong>Concluídos</strong>, clique em <strong>Anexar comprovante</strong> no item.</td>
 </tr>
 <tr>
+<td>Os boletos que a IA salvou não aparecem na página</td>
+<td>Clique em <strong>Importar da IA</strong> e escolha o <code>_controle.csv</code> da pasta dos boletos.</td>
+</tr>
+<tr>
+<td>A IA não mandou o resumo do dia (modo 3)</td>
+<td>Veja se o computador estava ligado e com o app da IA aberto. Peça “verifique meus boletos agora”.</td>
+</tr>
+<tr>
+<td>Não quero deixar o email conectado</td>
+<td>Use o modo 2: conecte o Gmail só durante a verificação e desconecte no final.</td>
+</tr>
+<tr>
+<td>Conectar e desconectar toda vez dá trabalho</td>
+<td>Deixe o Gmail conectado e use o modo 2 sem desconectar. A IA só lê o email quando você pede.</td>
+</tr>
+<tr>
 <td>Uma conta mensal não apareceu</td>
-<td>O Claude avisa as contas que costumam chegar e ainda não chegaram no mês. Confira no site da empresa ou no DDA do banco.</td>
+<td>A IA avisa as contas que costumam chegar e ainda não chegaram no mês. Confira no site da empresa ou no DDA do banco.</td>
 </tr>
 </tbody>
 </table></div></div>
@@ -1047,6 +1096,7 @@ function reviewCard(data,file){
 function updateHint(){$("#hint").hidden=!!$("#reviews").children.length}
 let queue=Promise.resolve();
 function handleFiles(files){
+  files=[...files];const csv=files.filter(f=>/\.csv$/i.test(f.name));if(csv.length){csv.forEach(importCsv);files=files.filter(f=>!/\.csv$/i.test(f.name))}
   for(const file of files){
     const card=reviewCard({arquivo:file.name,loading:true},file);card._set("Lendo…",null);
     queue=queue.then(async()=>{
@@ -1238,7 +1288,7 @@ function fold(line){const enc=new TextEncoder();if(enc.encode(line).length<=74)r
 function buildICS(items){
   const [hh,mm]=(DB.cfg.hora||"09:00").split(":").map(Number);const mins=hh*60+mm;
   const stamp=new Date().toISOString().replace(/[-:]/g,"").replace(/\.\d+/,"");
-  const L=["BEGIN:VCALENDAR","VERSION:2.0","PRODID:-//Meus Vencimentos//PT-BR","CALSCALE:GREGORIAN","METHOD:PUBLISH"];
+  const L=["BEGIN:VCALENDAR","VERSION:2.0","PRODID:-//Meus Boletos//PT-BR","CALSCALE:GREGORIAN","METHOD:PUBLISH"];
   for(const i of items){const d=i.venc.replace(/-/g,"");const n=new Date(isoToDate(i.venc));n.setDate(n.getDate()+1);
     L.push("BEGIN:VEVENT","UID:"+i.id+"@meus-vencimentos","DTSTAMP:"+stamp,"DTSTART;VALUE=DATE:"+d,"DTEND;VALUE=DATE:"+dateToISO(n).replace(/-/g,""),
       "SUMMARY:"+icsEsc(evTitle(i)),"DESCRIPTION:"+icsEsc(evDesc(i)),"TRANSP:TRANSPARENT");
@@ -1248,7 +1298,7 @@ function buildICS(items){
   L.push("END:VCALENDAR");return L.map(fold).join("\r\n")+"\r\n";
 }
 $("#btnIcsAll").onclick=()=>{const p=DB.items.filter(i=>i.status!=="concluido"&&daysUntil(i.venc)>=0);if(!p.length){toast("Não há pendências futuras.");return}
-  download("lembretes-vencimentos.ics",buildICS(p),"text/calendar");toast(p.length+" lembrete"+(p.length>1?"s":"")+" no arquivo.")};
+  download("lembretes-boletos.ics",buildICS(p),"text/calendar");toast(p.length+" lembrete"+(p.length>1?"s":"")+" no arquivo.")};
 const ANTS=[0,1,2,3,5,7,10,15];
 function renderCfg(){
   $("#antChk").innerHTML=ANTS.map(a=>`<label><input type="checkbox" value="${a}" ${DB.cfg.ant.includes(a)?"checked":""}> ${a===0?"no dia":a===1?"1 dia":a+" dias"}</label>`).join("");
@@ -1296,7 +1346,7 @@ ${pagTxt}
 Regras:
 - Use o Gmail somente para leitura. Nunca envie, responda, encaminhe, apague, mova nem marque emails.
 - Nunca faça pagamentos nem transferências; apenas avise.
-- Controle: use o arquivo _controle.csv na raiz da pasta dos boletos (UTF-8, separado por ponto e vírgula, colunas: email_id;recebido_em;remetente;beneficiario;cnpj_beneficiario;pagador;titular;vencimento;valor;linha_digitavel;situacao;arquivo;pago_em;valor_pago;comprovante). Crie o arquivo se não existir. Se ele existir sem as três últimas colunas, acrescente-as no cabeçalho e deixe-as vazias nas linhas antigas. Ele registra cada email tratado: nunca trate de novo um email cujo id já esteja lá.
+- Controle: use o arquivo _controle.csv na raiz da pasta dos boletos (UTF-8, separado por ponto e vírgula, colunas: email_id;recebido_em;remetente;beneficiario;cnpj_beneficiario;pagador;titular;vencimento;valor;linha_digitavel;situacao;arquivo;pago_em;valor_pago;comprovante). Crie o arquivo se não existir. Se ele existir sem as três últimas colunas, acrescente-as no cabeçalho e deixe-as vazias nas linhas antigas. Ele registra cada email tratado: nunca trate de novo um email cujo id já esteja lá. Escreva as datas no formato AAAA-MM-DD, os valores com vírgula decimal e sem R$ (por exemplo 850,00), a situação como pendente ou pago, e em arquivo e comprovante o caminho relativo à pasta dos boletos. A página Meus Boletos importa este arquivo.
 
 Como tratar cada boleto:
 a) Leia o conteúdo: beneficiário (nome e CNPJ), pagador (nome e CPF/CNPJ), vencimento, valor, multa, juros, desconto, data limite, referência e linha digitável. Se o PDF tiver senha e eu não tiver informado a regra, use os dados do texto do email e me avise.
@@ -1342,8 +1392,43 @@ $("#cIncl").addEventListener("change",e=>{DB.cfg.cIncl=e.target.checked;save();u
 $("#cPrompt").addEventListener("input",()=>{promptEdited=true;syncLinks()});
 $("#cCopy").onclick=async()=>toast(await copy($("#cPrompt").value)?(DB.cfg.cIA==="codex"?"Instrução copiada. Cole numa conversa nova do Codex.":"Instrução copiada. Cole numa conversa nova do Claude."):"Não consegui copiar.");
 
+
+/* ================= Importar da IA (_controle.csv) ================= */
+function parseCSV(t){t=t.replace(/^﻿/,"");const sep=(t.split("\n")[0].split(";").length>=t.split("\n")[0].split(",").length)?";":",";
+  const rows=[];let row=[],f="",q=false;for(let i=0;i<t.length;i++){const c=t[i];
+    if(q){if(c==='"'){if(t[i+1]==='"'){f+='"';i++}else q=false}else f+=c}
+    else if(c==='"')q=true;else if(c===sep){row.push(f);f=""}else if(c==="\n"){row.push(f.replace(/\r$/,""));rows.push(row);row=[];f=""}else f+=c}
+  if(f||row.length){row.push(f.replace(/\r$/,""));rows.push(row)}return rows.filter(r=>r.some(x=>x.trim()))}
+function csvDate(s){s=String(s||"").trim();if(/^\d{4}-\d{2}-\d{2}/.test(s))return s.slice(0,10);const m=/^(\d{1,2})\/(\d{1,2})\/(\d{4})/.exec(s);return m?brToISO(m[1].padStart(2,"0")+"/"+m[2].padStart(2,"0")+"/"+m[3]):""}
+async function importCsv(file){
+  let rows;try{rows=parseCSV(await file.text())}catch(e){toast("Não consegui ler o arquivo.");return}
+  if(rows.length<2){toast("O arquivo de controle está vazio.");return}
+  const H=rows[0].map(h=>h.trim().toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g,""));const col=n=>H.indexOf(n);
+  if(col("vencimento")<0){toast("Este arquivo não parece ser o _controle.csv da IA.");return}
+  const g=(r,n)=>{const i=col(n);return i<0?"":String(r[i]??"").trim()};let novos=0,atual=0,igual=0;
+  for(const r of rows.slice(1)){
+    const venc=csvDate(g(r,"vencimento"));if(!venc)continue;
+    const linha=g(r,"linha_digitavel").replace(/\D/g,"");const valor=parseMoney(g(r,"valor"));
+    const desc=g(r,"beneficiario")||g(r,"remetente")||"Boleto";const emailId=g(r,"email_id");
+    const pagTxt=g(r,"pagador");const docTxt=(pagTxt.match(/[\d*][\d*.\/-]{9,}[\d*]/)||[""])[0].replace(/[^\d*]/g,"");
+    const kp=docTxt?findPagador(docTxt):(DB.cfg.pagadores||[]).find(p=>p.apelido.toLowerCase()===pagTxt.toLowerCase());
+    const pago=/pag|quit|conclu/i.test(g(r,"situacao"))||!!csvDate(g(r,"pago_em"));
+    const it={tipo:"boleto",descricao:desc,venc,valor,linha:linha.length>=44?linha:"",pagadorDoc:kp?kp.doc:docTxt,pagador:kp?kp.apelido:pagTxt.replace(/[\d*][\d*.\/-]{9,}[\d*]/,"").replace(/[\s\-–]+$/,"").trim(),
+      arquivoSalvo:g(r,"arquivo"),emailId,origem:"ia"};
+    const ex=DB.items.find(i=>(emailId&&i.emailId===emailId)||(it.linha&&i.linha===it.linha)||(i.descricao.toLowerCase()===desc.toLowerCase()&&i.venc===venc&&i.valor===valor));
+    const tgt=ex||Object.assign({id:uid(),obs:"",debito:false,status:"pendente",criado:new Date().toISOString()},it);
+    let mudou=!ex;
+    if(ex){for(const k of ["linha","arquivoSalvo","emailId","pagadorDoc","pagador"])if(!ex[k]&&it[k]){ex[k]=it[k];mudou=true}}
+    if(pago&&tgt.status!=="concluido"){tgt.status="concluido";tgt.concluido=new Date().toISOString();tgt.pagoEm=csvDate(g(r,"pago_em"))||"";const vp=parseMoney(g(r,"valor_pago"));if(vp!=null)tgt.valorPago=vp;mudou=true}
+    const comp=g(r,"comprovante");if(comp&&!tgt.comprovante){tgt.comprovante=comp;mudou=true}
+    if(!ex){DB.items.push(tgt);novos++}else if(mudou)atual++;else igual++}
+  save();render();renderCal();
+  toast(`Importado do arquivo de controle: ${novos} novo${novos===1?"":"s"}, ${atual} atualizado${atual===1?"":"s"}${igual?`, ${igual} já estava${igual===1?"":"m"} na página`:""}.`)}
+$("#btnCsv").onclick=()=>$("#csvFile").click();
+$("#csvFile").addEventListener("change",e=>{if(e.target.files[0])importCsv(e.target.files[0]);e.target.value=""});
+
 /* ================= Cópia de segurança ================= */
-$("#btnExport").onclick=async()=>{const name="meus-vencimentos-copia-"+todayISO()+".json";const body=JSON.stringify(DB,null,2);
+$("#btnExport").onclick=async()=>{const name="meus-boletos-copia-"+todayISO()+".json";const body=JSON.stringify(DB,null,2);
   if(FS_OK&&DIR&&await dirPerm(true)==="granted"){try{const fh=await DIR.getFileHandle(name,{create:true});const w=await fh.createWritable();await w.write(body);await w.close();toast("Cópia salva na pasta dos boletos.");return}catch(e){}}
   download(name,body,"application/json")};
 $("#btnImport").onclick=()=>$("#importFile").click();
