@@ -259,6 +259,23 @@ dialog.man{width:min(860px,calc(100vw - 24px))}
   </div>
 </div></dialog>
 
+<!-- Pagamento / comprovante -->
+<dialog id="dlgPago" style="width:min(560px,calc(100vw - 24px))"><div class="dlg">
+  <div class="dlg-h"><h2 id="pgTitle">Registrar pagamento</h2><button class="ghost" data-close>Fechar ✕</button></div>
+  <div class="dlg-b">
+    <div class="grid" style="grid-template-columns:1fr 1fr">
+      <div><label for="pgData" id="pgDataLbl">Data do pagamento</label><input type="date" id="pgData"></div>
+      <div id="pgValorWrap"><label for="pgValor">Valor pago (R$)</label><input id="pgValor" inputmode="decimal" placeholder="0,00"></div>
+    </div>
+    <h3 id="pgCompLbl">Comprovante <span class="muted small">(opcional, mas recomendado)</span></h3>
+    <div class="drop" id="pgDrop" tabindex="0" role="button" aria-label="Escolher o comprovante"><b>Arraste o comprovante aqui</b><span class="muted small">PDF ou foto do app do banco · ou clique para escolher</span></div>
+    <input type="file" id="pgFile" accept="application/pdf,image/*" hidden>
+    <div id="pgMsg"></div>
+    <p class="small muted">O comprovante é guardado ao lado do boleto, com o mesmo nome e o final <span class="code" style="display:inline">_comprovante</span>.</p>
+    <div class="row"><button class="primary" id="pgOk">Confirmar pagamento</button><button class="ghost" data-close>Cancelar</button></div>
+  </div>
+</div></dialog>
+
 <!-- Pasta -->
 <dialog id="dlgPasta"><div class="dlg">
   <div class="dlg-h"><h2>Pasta dos boletos</h2><button class="ghost" data-close>Fechar ✕</button></div>
@@ -418,6 +435,12 @@ dialog.man{width:min(860px,calc(100vw - 24px))}
 <td>Igual ao modo 2</td>
 </tr>
 <tr>
+<td>Comprovantes</td>
+<td>Você anexa ao clicar em "Paguei"</td>
+<td>O Claude procura no email e associa ao boleto</td>
+<td>Igual ao modo 2, todo dia</td>
+</tr>
+<tr>
 <td>Avisos</td>
 <td>Lembretes na agenda do celular</td>
 <td>O que vence, mostrado na própria conversa</td>
@@ -448,10 +471,12 @@ dialog.man{width:min(860px,calc(100vw - 24px))}
 <li><strong>Salve:</strong> clique em <strong>Salvar</strong>. O navegador pergunta onde guardar o arquivo, já com o nome organizado. Por exemplo: <code>2026-11-25_boleto_condominio_R$850,00_ana.pdf</code>.</li>
 </ol>
 <p>Se o boleto não tiver PDF, use <strong>+ Adicionar manualmente</strong>. Cole o código do boleto, e a página lê o vencimento e o valor sozinha.</p>
-<h3>Pagar e marcar como pago</h3>
+<h3>Pagar e guardar o comprovante</h3>
 <ul>
 <li><strong>Copiar código:</strong> copia a linha digitável para colar no app do banco. O ideal é já <strong>agendar</strong> o pagamento para a data de vencimento.</li>
-<li><strong>Paguei:</strong> tira o boleto dos pendentes e o leva para a aba <strong>Concluídos</strong>.</li>
+<li><strong>Paguei:</strong> abre a janela de pagamento. Confira a data e o valor pago e arraste o <strong>comprovante</strong>, em PDF ou foto do app do banco. A página lê o comprovante, preenche a data e o valor e confere se o código do boleto no comprovante é o mesmo do boleto. Ao confirmar, o boleto vai para a aba <strong>Concluídos</strong>.</li>
+<li><strong>Onde o comprovante fica:</strong> ele é salvo ao lado do boleto, com o mesmo nome e o final <code>_comprovante</code>. Por exemplo: <code>2026-11-25_boleto_condominio_R$850,00_comprovante.pdf</code>.</li>
+<li><strong>Anexar depois:</strong> se pagou e ainda não tem o comprovante, confirme sem ele. Na aba <strong>Concluídos</strong>, os itens aparecem como "sem comprovante", com o botão <strong>Anexar comprovante</strong>.</li>
 </ul>
 <h3>Ver o mês</h3>
 <p>O botão <strong>Calendário</strong> mostra o mês em grade, com cores para cada situação:</p>
@@ -504,7 +529,8 @@ dialog.man{width:min(860px,calc(100vw - 24px))}
 <ul>
 <li><strong>Pastas por pagador:</strong> cada boleto vai para a subpasta do pagador, por exemplo <code>Boletos\Ana - 12345678909</code>, com o nome organizado pela data.</li>
 <li><strong>Arquivo de controle:</strong> o arquivo <strong>_controle.csv</strong>, na raiz da pasta, abre no Excel. Ele registra beneficiário, CNPJ, pagador, vencimento, valor, código e situação de cada boleto. É por ele que o Claude sabe o que já tratou, sem precisar marcar nada no seu email.</li>
-<li><strong>Ao pagar:</strong> avise o Claude, por exemplo "paguei o condomínio".</li>
+<li><strong>Comprovantes:</strong> o Claude procura no email os comprovantes enviados pelo banco ("comprovante", "pagamento realizado", "Pix enviado") e associa cada um ao boleto certo, pelo código ou pelo beneficiário e valor. Ele salva o comprovante ao lado do boleto, com o final <code>_comprovante</code>, e marca o boleto como pago no arquivo de controle. Se a associação for duvidosa, ele pergunta.</li>
+<li><strong>Ao pagar:</strong> avise o Claude, por exemplo "paguei o condomínio". Se o comprovante não chegar por email, envie o arquivo na conversa.</li>
 </ul>
 <h3>O que o Claude não resolve sozinho</h3>
 <ul>
@@ -569,6 +595,10 @@ dialog.man{width:min(860px,calc(100vw - 24px))}
 <tr>
 <td>Não quero deixar o email conectado</td>
 <td>Use o modo 2: conecte o Gmail só durante a verificação e desconecte no final.</td>
+</tr>
+<tr>
+<td>Paguei e não anexei o comprovante</td>
+<td>Na aba <strong>Concluídos</strong>, clique em <strong>Anexar comprovante</strong> no item.</td>
 </tr>
 <tr>
 <td>Uma conta mensal não apareceu</td>
@@ -873,9 +903,10 @@ function fileNameFor(i,orig){
 }
 function downloadNameFor(i,orig){const n=fileNameFor(i,orig);const pg=i.pagador||(i.pagadorDoc?String(i.pagadorDoc).replace(/\*/g,"x"):"");return pg?n.replace(/(\.[a-z0-9]+)$/i,"_"+slug(pg)+"$1"):n
 }
-async function storeFile(file,i){
+const addSuffix=(n,s)=>s?n.replace(/(\.[a-z0-9]+)$/i,s+"$1"):n;
+async function storeFile(file,i,suffix){
   if(!file||!DB.cfg.saveFile)return"";
-  const name=fileNameFor(i,file.name);
+  const name=addSuffix(fileNameFor(i,file.name),suffix);
   if(useFS()&&DIR){
     if(await dirPerm(true)!=="granted"){toast("Sem autorização para gravar na pasta.");return""}
     const sub=folderFor(i);const dir=sub?await DIR.getDirectoryHandle(sub,{create:true}):DIR;const pre=sub?sub+"\\":"";
@@ -884,7 +915,7 @@ async function storeFile(file,i){
     const fh=await dir.getFileHandle(final,{create:true});const w=await fh.createWritable();await w.write(file);await w.close();renderFolder();return pre+final;
   }
   if(useFS()&&!DIR){toast("Escolha a pasta dos boletos (botão Pasta) para guardar o PDF.");return""}
-  const dn=downloadNameFor(i,file.name);download(dn,file);return dn;
+  const dn=addSuffix(downloadNameFor(i,file.name),suffix);download(dn,file);return dn;
 }
 
 
@@ -1015,7 +1046,8 @@ function handleFiles(files){
 let TAB="pend";
 function statusOf(i){if(i.status==="concluido")return"done";const d=daysUntil(i.venc);const max=Math.max(3,...(DB.cfg.ant.length?DB.cfg.ant:[0]));
   if(d<0)return i.debito?"soon":"late";if(d<=3)return"soon";if(d<=max)return"near";return"ok"}
-function whenText(i){const d=daysUntil(i.venc);if(i.status==="concluido")return"Concluído"+(i.concluido?" em "+isoToBR(i.concluido.slice(0,10)):"");
+function whenText(i){const d=daysUntil(i.venc);if(i.status==="concluido"){const em=i.pagoEm||(i.concluido?i.concluido.slice(0,10):"");
+    return(i.tipo==="prazo"?"Concluído":"Pago")+(em?" em "+isoToBR(em):"")+(i.valorPago!=null&&i.valor!=null&&Math.abs(i.valorPago-i.valor)>0.005?" · pago "+money(i.valorPago):"")+(i.comprovante?" · 📎 comprovante":" · sem comprovante")}
   if(d<0)return(d===-1?"Venceu ontem":"Venceu há "+(-d)+" dias");if(d===0)return"Vence hoje";if(d===1)return"Vence amanhã";return"Vence em "+d+" dias"}
 const MESES=["jan","fev","mar","abr","mai","jun","jul","ago","set","out","nov","dez"];
 const MESES_L=["janeiro","fevereiro","março","abril","maio","junho","julho","agosto","setembro","outubro","novembro","dezembro"];
@@ -1023,7 +1055,7 @@ function tagsOf(i){const st=statusOf(i);const d=daysUntil(i.venc);return[i.tipo=
   st==="late"?'<span class="tag late">vencido</span>':'',(st==="soon"&&d<0)?'<span class="tag soon">confira o débito</span>':st==="soon"?'<span class="tag soon">urgente</span>':''].join("")}
 function itemActions(i){return i.status!=="concluido"
   ?`<button class="sm primary" data-act="done">${i.tipo==="prazo"?"Concluído":"Paguei"}</button>${i.linha?`<button class="sm" data-act="copy" title="Copiar o código para colar no app do banco">Copiar código</button>`:""}<a class="btn sm" target="_blank" rel="noopener" href="${gcalLink(i)}" title="Adicionar ao Google Agenda">Agenda</a><button class="sm ghost" data-act="edit">Editar</button><button class="sm ghost danger" data-act="del" title="Excluir">✕</button>`
-  :`<button class="sm" data-act="undo">Voltar para pendentes</button><button class="sm ghost danger" data-act="del" title="Excluir">✕</button>`}
+  :`<button class="sm ${i.comprovante?"":"primary"}" data-act="comp" title="${i.comprovante?esc(i.comprovante):"Anexar o comprovante de pagamento"}">${i.comprovante?"📎 Trocar comprovante":"📎 Anexar comprovante"}</button><button class="sm" data-act="undo">Voltar para pendentes</button><button class="sm ghost danger" data-act="del" title="Excluir">✕</button>`}
 let PAG="";
 const SEM="(sem pagador)";
 const visPag=i=>!PAG||(pagLabel(i)||SEM)===PAG;
@@ -1063,8 +1095,8 @@ function render(){
 async function onItemAction(e){
   const b=e.target.closest("[data-act]");if(!b)return;const host=b.closest("[data-id]");if(!host)return;const id=host.dataset.id;const i=DB.items.find(x=>x.id===id);if(!i)return;
   const a=b.dataset.act;
-  if(a==="done"){i.status="concluido";i.concluido=new Date().toISOString();save();render();renderCal();toast("Marcado como concluído.")}
-  if(a==="undo"){i.status="pendente";delete i.concluido;save();render();renderCal()}
+  if(a==="done"||a==="comp")openPago(id);
+  if(a==="undo"){i.status="pendente";delete i.concluido;delete i.pagoEm;delete i.valorPago;save();render();renderCal()}
   if(a==="copy")toast(await copy(i.linha)?"Código copiado. Cole no app do banco.":"Não consegui copiar.");
   if(a==="del"){if(b.dataset.armed){DB.items=DB.items.filter(x=>x.id!==id);save();render();renderCal();toast("Excluído."+(i.arquivoSalvo?" O PDF continua na pasta.":""))}
     else{b.dataset.armed=1;b.textContent="Excluir?";b.classList.remove("ghost");setTimeout(()=>{if(b.isConnected){delete b.dataset.armed;b.textContent="✕";b.classList.add("ghost")}},3500)}}
@@ -1072,6 +1104,52 @@ async function onItemAction(e){
 }
 $("#list").addEventListener("click",onItemAction);
 document.querySelectorAll(".tabs button").forEach(b=>b.onclick=()=>{TAB=b.dataset.tab;document.querySelectorAll(".tabs button").forEach(x=>x.classList.toggle("on",x===b));render()});
+
+
+/* ================= Pagamento e comprovante ================= */
+let PG={id:null,file:null};
+function findPagoData(text){
+  const nt=text.split("").map(c=>norm(c)||c).join("");
+  const re=/(data (do|de|da) (pagamento|transacao|operacao|debito|efetivacao)|pago em|realizado em|efetuado em|debitado em)/g;let m;
+  while((m=re.exec(nt))){const d=/(\d{2}\/\d{2}\/\d{4})/.exec(text.slice(m.index,m.index+80));if(d&&brToISO(d[1]))return brToISO(d[1])}
+  return"";
+}
+function findPagoValor(text){
+  const m=/(valor (pago|do pagamento|total pago|debitado|cobrado|total)|total pago)[^\d]{0,30}?(\d{1,3}(?:\.\d{3})*,\d{2})/i.exec(text);
+  return m?parseMoney(m[3]):null;
+}
+function openPago(id){const i=DB.items.find(x=>x.id===id);if(!i)return;PG={id,file:null};const prazo=i.tipo==="prazo";
+  $("#pgTitle").textContent=(i.status==="concluido"?"Comprovante · ":prazo?"Concluir · ":"Registrar pagamento · ")+i.descricao;
+  $("#pgDataLbl").textContent=prazo?"Data da conclusão":"Data do pagamento";$("#pgValorWrap").hidden=prazo;
+  $("#pgCompLbl").firstChild.textContent=prazo?"Comprovante ou protocolo ":"Comprovante ";
+  $("#pgData").value=i.pagoEm||todayISO();const v=i.valorPago!=null?i.valorPago:i.valor;$("#pgValor").value=v!=null?v.toFixed(2).replace(".",","):"";
+  $("#pgDrop b").textContent="Arraste o comprovante aqui";
+  $("#pgMsg").innerHTML=i.comprovante?`<div class="msg ok">Comprovante atual: ${esc(i.comprovante)}. Anexe outro para substituir.</div>`:"";
+  $("#pgOk").textContent=i.status==="concluido"?"Salvar":prazo?"Confirmar conclusão":"Confirmar pagamento";
+  $("#dlgPago").showModal()}
+async function pgSetFile(f){if(!f)return;PG.file=f;$("#pgDrop b").textContent="📎 "+f.name;const i=DB.items.find(x=>x.id===PG.id);if(!i)return;
+  $("#pgMsg").innerHTML=`<div class="msg info">Lendo o comprovante…</div>`;
+  try{const {text}=await readFile(f,()=>{});const msgs=[];
+    const ld=findLinha(text);
+    if(ld&&i.linha)msgs.push(ld.linha===i.linha?`<div class="msg ok">O código do boleto no comprovante confere com o boleto.</div>`:`<div class="msg warn">O código no comprovante é diferente do código deste boleto. Confira se é o comprovante certo.</div>`);
+    const dt=findPagoData(text);if(dt)$("#pgData").value=dt;
+    const v=findPagoValor(text);if(v!=null&&i.tipo!=="prazo"){$("#pgValor").value=v.toFixed(2).replace(".",",");
+      if(i.valor!=null&&Math.abs(v-i.valor)>0.005)msgs.push(`<div class="msg info">Valor pago (${money(v)}) diferente do valor do boleto (${money(i.valor)}). Pode ser multa, juros ou desconto.</div>`)}
+    if(!msgs.length)msgs.push(`<div class="msg ok">Comprovante anexado${dt||v!=null?"; data e valor lidos do comprovante":""}. Confira e confirme.</div>`);
+    $("#pgMsg").innerHTML=msgs.join("")}
+  catch(e){$("#pgMsg").innerHTML=`<div class="msg ok">Comprovante anexado. Não consegui ler o conteúdo: confira a data e o valor.</div>`}}
+$("#pgDrop").onclick=()=>$("#pgFile").click();$("#pgDrop").onkeydown=e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();$("#pgFile").click()}};
+$("#pgFile").onchange=e=>{pgSetFile(e.target.files[0]);e.target.value=""};
+["dragenter","dragover"].forEach(t=>$("#pgDrop").addEventListener(t,e=>{e.preventDefault();e.stopPropagation();$("#pgDrop").classList.add("over")}));
+["dragleave","drop"].forEach(t=>$("#pgDrop").addEventListener(t,e=>{e.preventDefault();e.stopPropagation();$("#pgDrop").classList.remove("over")}));
+$("#pgDrop").addEventListener("drop",e=>pgSetFile(e.dataTransfer.files[0]));
+$("#pgOk").onclick=async()=>{const i=DB.items.find(x=>x.id===PG.id);if(!i)return;const btn=$("#pgOk");btn.disabled=true;
+  const novo=i.status!=="concluido";
+  i.status="concluido";i.concluido=i.concluido||new Date().toISOString();i.pagoEm=$("#pgData").value||todayISO();
+  if(i.tipo!=="prazo")i.valorPago=parseMoney($("#pgValor").value);
+  let ok=true;if(PG.file){try{const nm=await storeFile(PG.file,i,"_comprovante");if(nm)i.comprovante=nm;else ok=false}catch(e){console.error(e);ok=false}}
+  save();render();renderCal();btn.disabled=false;$("#dlgPago").close();
+  toast((novo?(i.tipo==="prazo"?"Concluído":"Pagamento registrado"):"Comprovante atualizado")+(PG.file?(ok?" · comprovante guardado":" · o comprovante não pôde ser gravado"):" · sem comprovante"))};
 
 /* ================= Calendário ================= */
 let CAL=(()=>{const d=new Date();return{y:d.getFullYear(),m:d.getMonth(),sel:todayISO()}})();
@@ -1113,7 +1191,7 @@ function renderSide(){
   const t=its.reduce((s,i)=>s+(i.valor||0),0),tA=its.filter(i=>i.status!=="concluido").reduce((s,i)=>s+(i.valor||0),0);
   $("#calSide").innerHTML=`<h2 style="margin-bottom:2px">${dt.getDate()} de ${MESES_L[dt.getMonth()]}</h2><div class="muted small" style="margin-bottom:6px">${wd}${iso===todayISO()?" · hoje":""}</div>
     <div class="scroll">${its.length?its.map(i=>`<div class="side-item" data-id="${i.id}"><div class="t"><div style="font-weight:600">${esc(i.descricao)}</div><div class="small muted">${whenText(i)}${tagsOf(i)}</div>
-      <div class="acts" style="margin-top:4px">${i.status!=="concluido"?`<button class="sm primary" data-act="done">${i.tipo==="prazo"?"Concluído":"Paguei"}</button>${i.linha?`<button class="sm" data-act="copy">Copiar código</button>`:""}`:`<button class="sm" data-act="undo">Desfazer</button>`}<button class="sm ghost" data-act="edit">Editar</button></div></div>
+      <div class="acts" style="margin-top:4px">${i.status!=="concluido"?`<button class="sm primary" data-act="done">${i.tipo==="prazo"?"Concluído":"Paguei"}</button>${i.linha?`<button class="sm" data-act="copy">Copiar código</button>`:""}`:`<button class="sm" data-act="comp">${i.comprovante?"📎 Trocar comprovante":"📎 Anexar comprovante"}</button><button class="sm" data-act="undo">Desfazer</button>`}<button class="sm ghost" data-act="edit">Editar</button></div></div>
       <div class="it-val">${money(i.valor)}</div></div>`).join(""):`<div class="muted" style="padding:20px 0">Nenhum pagamento ou prazo neste dia.</div>`}</div>
     ${its.length?`<div class="side-total"><span>Total do dia</span><span>${money(t)}</span></div>${tA!==t?`<div class="small muted" style="display:flex;justify-content:space-between"><span>ainda a pagar</span><span>${money(tA)}</span></div>`:""}`:""}
     <div class="row" style="margin-top:10px"><button class="sm" id="calAdd">+ Adicionar neste dia</button></div>`;
@@ -1196,26 +1274,27 @@ ${pagTxt}
 Regras:
 - Use o Gmail somente para leitura. Nunca envie, responda, encaminhe, apague, mova nem marque emails.
 - Nunca faça pagamentos nem transferências; apenas avise.
-- Controle: use o arquivo _controle.csv na raiz da pasta dos boletos (UTF-8, separado por ponto e vírgula, colunas: email_id;recebido_em;remetente;beneficiario;cnpj_beneficiario;pagador;titular;vencimento;valor;linha_digitavel;situacao;arquivo). Crie o arquivo se não existir. Ele registra cada email tratado: nunca trate de novo um email cujo id já esteja lá.
+- Controle: use o arquivo _controle.csv na raiz da pasta dos boletos (UTF-8, separado por ponto e vírgula, colunas: email_id;recebido_em;remetente;beneficiario;cnpj_beneficiario;pagador;titular;vencimento;valor;linha_digitavel;situacao;arquivo;pago_em;valor_pago;comprovante). Crie o arquivo se não existir. Se ele existir sem as três últimas colunas, acrescente-as no cabeçalho e deixe-as vazias nas linhas antigas. Ele registra cada email tratado: nunca trate de novo um email cujo id já esteja lá.
 
 Como tratar cada boleto:
 a) Leia o conteúdo: beneficiário (nome e CNPJ), pagador (nome e CPF/CNPJ), vencimento, valor, multa, juros, desconto, data limite, referência e linha digitável. Se o PDF tiver senha e eu não tiver informado a regra, use os dados do texto do email e me avise.
 b) Confira: valide os dígitos da linha digitável e se o valor e o vencimento do código batem com os impressos (contas de consumo, que começam com 8, não trazem o vencimento no código). Alerte com destaque se algo não bater, se o beneficiário não corresponder a quem mandou o email, se o banco ou o beneficiário mudou em relação aos meses anteriores no _controle.csv, ou se o pagador não for nenhum dos meus. São sinais de boleto falso.
 c) Identifique o pagador pelo CPF/CNPJ (se aparecer mascarado, como 123.***.***-09, use os dígitos visíveis). Salve o PDF na subpasta desse pagador com o nome AAAA-MM-DD_boleto_beneficiario_R$valor.pdf (por exemplo 2026-11-25_boleto_condominio_R$850,00.pdf), sem sobrescrever nem duplicar arquivos. Não apague nem mexa em outros arquivos da pasta. Se o pagador não estiver na lista, me pergunte o apelido antes de criar a subpasta.
 d) Acrescente uma linha ao _controle.csv.
+e) Comprovantes: procure também comprovantes de pagamento (emails do banco ou do app com "comprovante", "pagamento realizado", "pagamento efetuado", "Pix enviado", "transferência realizada", ou anexos de comprovante). Associe cada comprovante ao boleto correspondente no _controle.csv: mesma linha digitável ou, se não houver, mesmo beneficiário e valor próximo, pago perto do vencimento. Salve o comprovante na mesma subpasta do boleto, com o mesmo nome do boleto e o final _comprovante (por exemplo 2026-11-25_boleto_condominio_R$850,00_comprovante.pdf). Preencha pago_em, valor_pago e comprovante, e mude a situação para pago. Se não tiver certeza da associação, pergunte. Se eu mandar um comprovante na conversa, faça o mesmo com ele. Avise boletos marcados como pagos que continuam sem comprovante.
 
 O que fazer:
 1. Verifique se o Gmail está conectado. Se não estiver, me ajude a conectar, autorizando somente a leitura, e espere minha autorização.
 2. Verifique se você tem acesso à pasta dos boletos no meu computador. Se não tiver, peça acesso.
 3. Leia o _controle.csv e procure, lidos ou não, os emails ${modo==="pedir"?"recebidos desde o último email registrado nele (se o arquivo não existir, dos últimos 90 dias)":"dos últimos 90 dias"} com boletos ou contas a pagar: anexos PDF com termos como boleto, fatura, vencimento, cobrança, mensalidade, linha digitável; emails com código de barras ou "pague até" no texto; avisos de "novo boleto emitido no seu CPF" do banco. Ignore listas de discussão, propaganda, prestações de contas e notas fiscais.
-4. Leia e confira cada boleto (itens a e b), mas ainda não salve nada.
-5. Mostre a lista agrupada por pagador, com o total de cada um e os alertas, e espere eu dizer quais já paguei e se pode salvar.
-6. Depois da minha aprovação, salve os PDFs e atualize o _controle.csv (itens c e d), marcando como pago o que eu disser que já paguei.`;
+4. Leia e confira cada boleto (itens a e b) e procure os comprovantes de pagamento do mesmo período (item e), mas ainda não salve nada.
+5. Mostre a lista agrupada por pagador, com o total de cada um, os alertas e os comprovantes encontrados para cada boleto, e espere eu dizer quais já paguei e se pode salvar.
+6. Depois da minha aprovação, salve os PDFs dos boletos e dos comprovantes e atualize o _controle.csv (itens c, d e e), marcando como pago o que eu disser que já paguei.`;
   if(modo==="pedir")t+=`
 7. Ao terminar, me mostre o que vence nos próximos dias e me lembre de desconectar o Gmail (configurações do Claude › Conectores) se eu não quiser deixar o acesso ativo.`;
   else t+=`
-7. Depois disso, crie uma tarefa agendada diária no horário acima que, a cada execução: procure os emails dos últimos 3 dias (e, se a revisão semanal estiver ligada, dos últimos 30 dias às segundas-feiras); trate os novos como nos itens a a d, sem pedir aprovação; e me envie um resumo com: alertas de possível fraude, pendentes vencidos, o que vence em até 3 e em até 7 dias, boletos novos, e contas que costumam chegar todo mês e ainda não chegaram. Se o computador estiver desligado, a tarefa deve mandar o resumo assim mesmo e avisar que os PDFs não foram salvos.
-8. Quando eu disser que paguei algo, mude a situação daquela linha do _controle.csv para pago.`;
+7. Depois disso, crie uma tarefa agendada diária no horário acima que, a cada execução: procure os emails dos últimos 3 dias (e, se a revisão semanal estiver ligada, dos últimos 30 dias às segundas-feiras); trate os novos boletos e comprovantes como nos itens a a e, sem pedir aprovação (comprovante com associação duvidosa fica para eu confirmar); e me envie um resumo com: alertas de possível fraude, pendentes vencidos, o que vence em até 3 e em até 7 dias, boletos novos, pagamentos confirmados por comprovante, boletos pagos ainda sem comprovante, e contas que costumam chegar todo mês e ainda não chegaram. Se o computador estiver desligado, a tarefa deve mandar o resumo assim mesmo e avisar que os PDFs não foram salvos.
+8. Quando eu disser que paguei algo, mude a situação daquela linha do _controle.csv para pago e pergunte pelo comprovante, se ele não tiver chegado por email.`;
   if(c.cIncl&&pend.length)t+=`\n\nPendências que já anotei (confira se aparecem no email e inclua as que não aparecerem):\n`+pend.map(i=>`- ${isoToBR(i.venc)} – ${i.descricao}${i.valor!=null?" – "+money(i.valor):""}${pagLabel(i)?" – pagador: "+pagLabel(i):""}${i.debito?" (débito automático)":""}`).join("\n");
   return t;
 }
