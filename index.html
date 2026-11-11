@@ -252,15 +252,16 @@ dialog.cal .dlg{height:100%;max-height:none}
       <div class="row"><button class="primary" id="btnPickDir">Escolher pasta</button><button id="btnForgetDir" hidden>Esquecer esta pasta</button><button class="ghost" id="btnUseDl">Prefiro usar os downloads do navegador</button></div>
     </div>
     <div id="pastaNoFS" hidden>
-      <div class="msg info">Os PDFs são <b>baixados</b> com o nome organizado. Para que caiam em <b>C:\documentos\boletos</b>:</div>
+      <div class="msg info">Cada PDF salvo é <b>baixado</b> com o nome organizado pela data. Para que todos caiam na sua pasta de boletos:</div>
       <ol class="small" style="padding-left:18px;margin:6px 0 10px">
         <li>No Chrome ou no Edge, abra as <b>Configurações</b> e procure <b>Downloads</b>.</li>
-        <li>Em <b>Local</b>, clique em <b>Alterar</b> e escolha C:\documentos\boletos.<br><span class="muted">Ou ative <b>Perguntar onde salvar cada arquivo</b>, se preferir escolher a cada vez.</span></li>
+        <li>Em <b>Local</b>, clique em <b>Alterar</b> e escolha a pasta dos boletos.<br><span class="muted">Ou ative <b>Perguntar onde salvar cada arquivo</b>: o navegador lembra a última pasta, e basta clicar em Salvar.</span></li>
+        <li>Digite abaixo o caminho dessa pasta, para referência.</li>
       </ol>
-      <div class="row"><button id="btnBackFS">Tentar gravar direto numa pasta</button></div>
+      <div class="row"><button class="ghost" id="btnBackFS">Avançado: gravar direto numa pasta (Chrome/Edge)</button></div>
     </div>
-    <div id="pathWrap" hidden style="margin-top:10px"><label for="pastaPath">Caminho completo desta pasta <span class="muted">(o navegador não informa; digite para aparecer certo aqui e na instrução do Claude)</span></label>
-      <input id="pastaPath" placeholder="ex.: D:\OneDrive\Documentos\Boletos"></div>
+    <div id="pathWrap" hidden style="margin-top:10px"><label for="pastaPath">Caminho da pasta dos boletos <span class="muted">(digite para aparecer aqui e na instrução do Claude)</span></label>
+      <input id="pastaPath" placeholder="ex.: D:\Boletos"></div>
     <h3>Ao salvar um item</h3>
     <label class="inline"><input type="checkbox" id="optSaveFile" checked> Guardar uma cópia do PDF na pasta</label>
   </div>
@@ -335,7 +336,7 @@ dialog.cal .dlg{height:100%;max-height:none}
 /* ================= Armazenamento ================= */
 const KEY="meusVencimentos.v1";
 const DEF_PASTA="C:\\documentos\\boletos";
-const DEF={items:[],cfg:{ant:[7,2],hora:"09:00",cHora:"07:00",cSemanal:"seg",cRem:"",cExc:"",cIncl:true,saveFile:true,pastaNome:"",modo:"pasta"}};
+const DEF={items:[],cfg:{ant:[7,2],hora:"09:00",cHora:"07:00",cSemanal:"seg",cRem:"",cExc:"",cIncl:true,saveFile:true,pastaNome:"",saida:"download"}};
 let DB=load();
 function load(){try{const r=localStorage.getItem(KEY);if(r){const d=JSON.parse(r);return{items:d.items||[],cfg:Object.assign({},DEF.cfg,d.cfg||{})}}}catch(e){}return JSON.parse(JSON.stringify(DEF))}
 function save(){try{localStorage.setItem(KEY,JSON.stringify(DB))}catch(e){toast("Não foi possível guardar neste navegador. Use 'Cópia'.")}}
@@ -547,9 +548,9 @@ async function kvGet(k){try{const db=await idb();return await new Promise(r=>{co
 async function kvSet(k,v){try{const db=await idb();await new Promise(r=>{const t=db.transaction("kv","readwrite");t.objectStore("kv").put(v,k);t.oncomplete=r;t.onerror=r})}catch(e){}}
 async function kvDel(k){try{const db=await idb();await new Promise(r=>{const t=db.transaction("kv","readwrite");t.objectStore("kv").delete(k);t.oncomplete=r;t.onerror=r})}catch(e){}}
 async function dirPerm(ask){if(!DIR)return"none";try{let p=await DIR.queryPermission({mode:"readwrite"});if(p!=="granted"&&ask)p=await DIR.requestPermission({mode:"readwrite"});return p}catch(e){return"denied"}}
-function pastaLabel(){return (DIR&&DB.cfg.modo!=="download")?(DB.cfg.pastaNome||DIR.name):DEF_PASTA}
+function pastaLabel(){return DB.cfg.pastaNome||((DIR&&useFS())?DIR.name:DEF_PASTA)}
 const EMBED=(()=>{try{return window.self!==window.top}catch(e){return true}})();
-const useFS=()=>FS_OK&&!EMBED&&DB.cfg.modo!=="download";
+const useFS=()=>FS_OK&&!EMBED&&DB.cfg.saida==="pasta";
 function pastaMsg(kind,html){$("#pastaStatus").innerHTML=`<div class="msg ${kind}">${html}</div>`}
 function errTxt(e){return e?(e.name||"Erro")+(e.message?": "+e.message:""):"erro desconhecido"}
 async function renderFolder(keepMsg){
@@ -557,7 +558,9 @@ async function renderFolder(keepMsg){
   $("#pathWrap").hidden=true;
   $("#pastaFS").hidden=!useFS();$("#pastaNoFS").hidden=useFS();$("#btnForgetDir").hidden=!DIR;$("#btnBackFS").hidden=!(FS_OK&&!EMBED);
   if(!DB.cfg.saveFile){box.innerHTML=`<span class="dot"></span><span class="path">Cópia dos PDFs desligada</span><button class="sm" data-open="dlgPasta">Ajustar</button>`;if(!keepMsg)st.innerHTML="";return}
-  if(!useFS()){box.innerHTML=`<span class="dot on"></span><span class="path" title="Os PDFs são baixados com o nome organizado">Downloads do navegador · nome organizado</span><button class="sm" data-open="dlgPasta">Pasta</button>`;if(!keepMsg)st.innerHTML="";return}
+  if(!useFS()){$("#pathWrap").hidden=false;if(document.activeElement!==$("#pastaPath"))$("#pastaPath").value=DB.cfg.pastaNome||"";
+    const lbl=DB.cfg.pastaNome?"Downloads → "+DB.cfg.pastaNome:"Downloads do navegador · nome organizado";
+    box.innerHTML=`<span class="dot on"></span><span class="path" title="${esc(lbl)}">${esc(lbl)}</span><button class="sm" data-open="dlgPasta">Pasta</button>`;if(!keepMsg)st.innerHTML="";return}
   if(!DIR){box.innerHTML=`<span class="dot warn"></span><span class="path" title="${esc(DEF_PASTA)}">${esc(DEF_PASTA)} · não escolhida</span><button class="sm primary" data-open="dlgPasta">Escolher</button>`;
     if(!keepMsg)st.innerHTML=`<div class="msg warn">Nenhuma pasta escolhida ainda.</div>`;return}
   $("#pathWrap").hidden=false;if(document.activeElement!==$("#pastaPath"))$("#pastaPath").value=pastaLabel();
@@ -566,14 +569,14 @@ async function renderFolder(keepMsg){
   if(!keepMsg)st.innerHTML=`<div class="msg ${p==="granted"?"ok":"info"}">Pasta escolhida: <b>${esc(pastaLabel())}</b>${p==="granted"?"":" — o navegador vai pedir autorização de novo na próxima gravação."}</div>`;
 }
 async function useDir(h,nome){
-  DIR=h;DB.cfg.pastaNome=norm(nome)==="documentos\\boletos"?DEF_PASTA:nome;DB.cfg.modo="pasta";save();await kvSet("dir",h);
+  DIR=h;DB.cfg.pastaNome=norm(nome)==="documentos\\boletos"?DEF_PASTA:nome;DB.cfg.saida="pasta";save();await kvSet("dir",h);
   await renderFolder(true);updatePrompt();
   if(DB.cfg.pastaNome===DEF_PASTA)pastaMsg("ok","Pronto. Os PDFs serão guardados em <b>"+esc(pastaLabel())+"</b>.");
   else{pastaMsg("ok","Pronto. Os PDFs serão guardados na pasta <b>"+esc(h.name)+"</b>. Digite abaixo o caminho completo dela.");$("#pastaPath").focus();$("#pastaPath").select()}
 }
 const FALLBACK=`<div class="row" style="margin:6px 0 2px"><button data-usedl>Usar os downloads do navegador</button></div>`;
 function bindFallback(){const b=$("#pastaStatus [data-usedl]");if(b)b.onclick=()=>setDownloadMode()}
-async function setDownloadMode(){DB.cfg.modo="download";save();await renderFolder(true);updatePrompt();
+async function setDownloadMode(){DB.cfg.saida="download";save();await renderFolder(true);updatePrompt();
   pastaMsg("ok","Pronto. Cada PDF salvo será <b>baixado</b> com o nome organizado. Para que caiam em C:\\documentos\\boletos, veja as instruções abaixo.")}
 async function pickDir(){
   if(EMBED){pastaMsg("warn","<b>A página está aberta dentro de outro aplicativo</b> (por exemplo, a pré-visualização do Claude), e ali o navegador não deixa escolher pastas. Baixe o arquivo e abra-o com dois cliques, direto no Chrome ou no Edge.");return}
@@ -839,9 +842,9 @@ $("#horaLemb").addEventListener("change",e=>{DB.cfg.hora=e.target.value||"09:00"
 $("#optSaveFile").addEventListener("change",e=>{DB.cfg.saveFile=e.target.checked;save();renderFolder()});
 $("#btnPickDir").onclick=pickDir;
 $("#pastaPath").addEventListener("input",e=>{DB.cfg.pastaNome=e.target.value.trim()||(DIR?DIR.name:"");save();updatePrompt();
-  const pb=$("#folderBox .path");if(pb){pb.textContent=pastaLabel();pb.title=pastaLabel()}});
+  renderFolder(true)});
 $("#btnUseDl").onclick=()=>setDownloadMode();
-$("#btnBackFS").onclick=async()=>{DB.cfg.modo="pasta";save();await renderFolder();updatePrompt()};
+$("#btnBackFS").onclick=async()=>{DB.cfg.saida="pasta";save();await renderFolder();updatePrompt()};
 $("#btnForgetDir").onclick=async()=>{DIR=null;DB.cfg.pastaNome="";save();await kvDel("dir");renderFolder();updatePrompt()};
 
 /* ================= Claude ================= */
@@ -853,7 +856,7 @@ function buildPrompt(){
   let t=`Quero configurar um procedimento de avisos de boletos e prazos. Conduza a configuração comigo, passo a passo, e me pergunte o que faltar.
 
 Minhas preferências:
-- Pasta dos boletos no meu computador: ${pasta}${DIR&&pasta!==DEF_PASTA?" (confirme comigo o caminho completo)":""}. Todos os PDFs ficam nesse mesmo diretório, sem subpastas.
+- Pasta dos boletos no meu computador: ${pasta}${DB.cfg.pastaNome?"":" (confirme comigo o caminho completo)"}. Todos os PDFs ficam nesse mesmo diretório, sem subpastas.
 - Horário do aviso diário: ${c.cHora||"07:00"}
 - Avisar ${antText()} do vencimento, e destacar o que vence em até 3 dias
 - Resumo semanal: ${c.cSemanal==="seg"?"sim, segunda de manhã, com o que vence nos próximos 30 dias e o que ficou pendente":"não"}
