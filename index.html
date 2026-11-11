@@ -1,0 +1,910 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Meus Vencimentos</title>
+<style>
+:root{
+  --bg:#f6f5f2; --surface:#ffffff; --surface-2:#f0efeb; --line:#e2e0da;
+  --text:#1f1e1c; --muted:#6b6862; --accent:#2f5d50; --accent-ink:#ffffff; --accent-soft:rgba(47,93,80,.14);
+  --red:#b3261e; --red-bg:#fbe9e7; --amber:#8a5a00; --amber-bg:#fff3d6;
+  --blue:#1f5a8a; --blue-bg:#e6f0f8; --green:#2e6b3a; --green-bg:#e5f2e7;
+  --radius:12px; --shadow:0 1px 2px rgba(0,0,0,.05),0 2px 8px rgba(0,0,0,.04);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#161614; --surface:#1f1f1c; --surface-2:#282825; --line:#34332f;
+    --text:#ecebe6; --muted:#a3a097; --accent:#7fb8a6; --accent-ink:#10201b; --accent-soft:rgba(127,184,166,.16);
+    --red:#ff8a80; --red-bg:#3a1f1c; --amber:#f2c062; --amber-bg:#352a12;
+    --blue:#8cc0ec; --blue-bg:#16283a; --green:#8fd19e; --green-bg:#18301d; --shadow:none;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#161614; --surface:#1f1f1c; --surface-2:#282825; --line:#34332f;
+  --text:#ecebe6; --muted:#a3a097; --accent:#7fb8a6; --accent-ink:#10201b; --accent-soft:rgba(127,184,166,.16);
+  --red:#ff8a80; --red-bg:#3a1f1c; --amber:#f2c062; --amber-bg:#352a12;
+  --blue:#8cc0ec; --blue-bg:#16283a; --green:#8fd19e; --green-bg:#18301d; --shadow:none;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--text);font:14px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif}
+h1{font-size:20px;margin:0;letter-spacing:-.01em;white-space:nowrap}
+h2{font-size:15px;margin:0 0 8px}
+h3{font-size:14px;margin:12px 0 6px}
+p{margin:6px 0}
+.muted{color:var(--muted)} .small{font-size:12.5px}
+button,.btn{font:inherit;font-size:13px;border:1px solid var(--line);background:var(--surface);color:var(--text);border-radius:8px;padding:6px 10px;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:6px;white-space:nowrap;line-height:1.3}
+button:hover,.btn:hover{background:var(--surface-2)}
+button.primary,.btn.primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+button.primary:hover,.btn.primary:hover{filter:brightness(1.07)}
+button.ghost{border-color:transparent;background:transparent;color:var(--muted);padding:5px 7px}
+button.ghost:hover{color:var(--text);background:var(--surface-2)}
+button.danger{color:var(--red)}
+button.sm{font-size:12px;padding:4px 8px}
+input,select,textarea{font:inherit;font-size:13px;color:var(--text);background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:6px 8px;width:100%}
+textarea{resize:vertical}
+input[type=checkbox]{width:auto;accent-color:var(--accent)}
+label{display:block;font-size:12px;color:var(--muted);margin-bottom:2px}
+label.inline{display:flex;gap:6px;align-items:center;color:var(--text);font-size:13px;margin:0}
+.grid{display:grid;gap:8px;grid-template-columns:repeat(auto-fit,minmax(150px,1fr))}
+.row{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow)}
+
+/* ---------- Estrutura: tela única no computador ---------- */
+.app{display:flex;flex-direction:column;height:100vh;height:100dvh;padding:14px 16px;gap:12px;max-width:1500px;margin:0 auto}
+header.top{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.stats{display:flex;gap:8px;flex:1;min-width:0}
+.stat{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:5px 12px;display:flex;align-items:baseline;gap:7px;white-space:nowrap}
+.stat b{font-size:17px;font-variant-numeric:tabular-nums}
+.stat span{font-size:12px;color:var(--muted)}
+.stat.red b{color:var(--red)} .stat.amber b{color:var(--amber)}
+.tools{display:flex;gap:6px;flex-wrap:wrap}
+.main{flex:1;min-height:0;display:grid;grid-template-columns:minmax(300px,360px) 1fr;gap:12px}
+.col{display:flex;flex-direction:column;min-height:0;padding:14px}
+.scroll{overflow:auto;min-height:0;flex:1}
+.drop{border:2px dashed var(--line);border-radius:10px;padding:16px 12px;text-align:center;background:var(--surface);cursor:pointer;transition:border-color .15s}
+.drop.over{border-color:var(--accent);background:var(--surface-2)}
+.drop b{display:block;font-size:14px}
+.folder{display:flex;align-items:center;gap:8px;margin-top:10px;padding:8px 10px;border-radius:10px;background:var(--surface-2);font-size:12.5px}
+.folder .path{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1;min-width:0}
+.dot{width:8px;height:8px;border-radius:99px;flex:none;background:var(--muted)}
+.dot.on{background:var(--green)} .dot.warn{background:var(--amber)}
+.review{border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:10px;padding:10px;margin-top:10px;background:var(--surface)}
+.review .fname{font-weight:600;word-break:break-all;font-size:13px}
+.msg{font-size:12.5px;padding:5px 9px;border-radius:8px;margin:6px 0}
+.msg.warn{background:var(--amber-bg);color:var(--amber)} .msg.ok{background:var(--green-bg);color:var(--green)} .msg.info{background:var(--blue-bg);color:var(--blue)}
+.progress{height:5px;background:var(--surface-2);border-radius:99px;overflow:hidden;margin-top:6px}
+.progress i{display:block;height:100%;width:0;background:var(--accent);transition:width .2s}
+.hint{margin-top:auto;padding-top:10px;font-size:12px;color:var(--muted)}
+
+.listhead{display:flex;align-items:center;gap:8px;justify-content:space-between;margin-bottom:6px;flex-wrap:wrap}
+.tabs{display:flex;gap:2px}
+.tabs button{border:none;background:transparent;color:var(--muted);padding:6px 10px;border-radius:8px}
+.tabs button.on{color:var(--text);background:var(--surface-2);font-weight:600}
+.item{display:grid;grid-template-columns:54px minmax(0,1fr) auto;gap:12px;align-items:center;padding:9px 6px;border-bottom:1px solid var(--line)}
+.item:last-child{border-bottom:none}
+.date{border-radius:9px;text-align:center;padding:4px 2px;background:var(--surface-2);line-height:1.15}
+.date .d{font-size:17px;font-weight:700}
+.date .m{font-size:11px;text-transform:uppercase;letter-spacing:.04em}
+.st-late .date{background:var(--red-bg);color:var(--red)} .st-soon .date{background:var(--amber-bg);color:var(--amber)}
+.st-near .date{background:var(--blue-bg);color:var(--blue)} .st-done .date{background:var(--green-bg);color:var(--green)}
+.it-desc{font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.it-meta{font-size:12px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.it-right{display:flex;flex-direction:row-reverse;align-items:center;gap:10px}
+.it-right .it-val{min-width:92px;text-align:right}
+.it-val{font-weight:700;font-variant-numeric:tabular-nums;white-space:nowrap}
+.acts{display:flex;gap:4px;flex-wrap:nowrap}
+.tag{display:inline-block;font-size:10.5px;font-weight:600;padding:1px 6px;border-radius:99px;background:var(--surface-2);color:var(--muted);margin-left:4px;vertical-align:1px}
+.tag.late{background:var(--red-bg);color:var(--red)} .tag.soon{background:var(--amber-bg);color:var(--amber)} .tag.auto{background:var(--green-bg);color:var(--green)}
+.code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:11px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.empty{text-align:center;color:var(--muted);padding:40px 8px}
+.foot{display:flex;justify-content:space-between;gap:8px;align-items:center;padding-top:8px;border-top:1px solid var(--line);margin-top:6px;flex-wrap:wrap}
+
+/* ---------- Janelas ---------- */
+dialog{border:1px solid var(--line);border-radius:14px;background:var(--surface);color:var(--text);padding:0;width:min(640px,calc(100vw - 24px));max-height:calc(100dvh - 24px);box-shadow:0 20px 60px rgba(0,0,0,.25)}
+dialog::backdrop{background:rgba(0,0,0,.35)}
+.dlg{display:flex;flex-direction:column;max-height:calc(100dvh - 26px)}
+.dlg-h{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:12px 16px;border-bottom:1px solid var(--line)}
+.dlg-h h2{margin:0;font-size:16px}
+.dlg-b{padding:12px 16px 16px;overflow:auto}
+ul.req{margin:4px 0 8px;padding-left:18px} ul.req li{margin:2px 0}
+.chk{display:flex;gap:10px;flex-wrap:wrap}
+.chk label{display:flex;align-items:center;gap:5px;color:var(--text);font-size:13px;margin:0}
+
+/* ---------- Calendário ---------- */
+dialog.cal{width:min(1280px,calc(100vw - 24px));height:calc(100dvh - 24px)}
+dialog.cal .dlg{height:100%;max-height:none}
+.cal-body{flex:1;min-height:0;display:grid;grid-template-columns:1fr 300px;gap:14px;padding:12px 16px 16px}
+.cal-left{display:flex;flex-direction:column;min-height:0}
+.cal-sum{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px}
+.cal-sum .stat{padding:4px 10px}
+.wk{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;text-align:center;margin-bottom:4px}
+.month{flex:1;min-height:0;display:grid;grid-template-columns:repeat(7,1fr);grid-auto-rows:1fr;gap:4px}
+.day{position:relative;border:1px solid var(--line);border-radius:8px;padding:4px 5px;background:var(--surface);cursor:pointer;display:flex;flex-direction:column;min-height:0;overflow:hidden;text-align:left;font:inherit;color:inherit}
+.day:hover{border-color:var(--muted)}
+.day .heat{position:absolute;inset:0;background:var(--accent);pointer-events:none}
+.day>*{position:relative;display:block;width:100%}
+.day.out{opacity:.38}
+.day.today{box-shadow:inset 0 0 0 2px var(--accent)}
+.day.sel{border-color:var(--text);box-shadow:inset 0 0 0 1px var(--text)}
+.day .n{font-size:12px;font-weight:600;display:flex;justify-content:space-between;gap:4px}
+.day .bars{display:flex}
+.day .tot{font-size:11.5px;font-weight:700;font-variant-numeric:tabular-nums}
+.day .bars{display:flex;flex-direction:column;gap:2px;margin-top:3px;min-height:0;overflow:hidden}
+.bar{display:block;font-size:10.5px;line-height:1.35;padding:0 5px;border-radius:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;border-left:3px solid currentColor}
+.bar.late{background:var(--red-bg);color:var(--red)} .bar.soon{background:var(--amber-bg);color:var(--amber)}
+.bar.near,.bar.ok{background:var(--blue-bg);color:var(--blue)} .bar.done{background:var(--green-bg);color:var(--green);text-decoration:line-through}
+.more{font-size:10.5px;color:var(--muted);padding-left:3px}
+.legend{display:flex;gap:12px;flex-wrap:wrap;font-size:12px;color:var(--muted);margin-top:8px;align-items:center}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:4px;vertical-align:-1px}
+.cal-side{border-left:1px solid var(--line);padding-left:14px;display:flex;flex-direction:column;min-height:0}
+.side-item{display:flex;justify-content:space-between;gap:8px;align-items:center;padding:8px 0;border-bottom:1px solid var(--line)}
+.side-item .t{min-width:0}
+.side-item .t div{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.side-total{display:flex;justify-content:space-between;font-weight:700;padding:10px 0;font-variant-numeric:tabular-nums}
+
+.toast{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);background:var(--text);color:var(--bg);padding:8px 16px;border-radius:99px;font-size:13px;opacity:0;pointer-events:none;transition:.2s;max-width:calc(100% - 32px);z-index:10}
+.toast.on{opacity:1}
+
+/* ---------- Celular e telas estreitas: empilha e rola normalmente ---------- */
+@media (max-width:900px), (max-height:560px){
+  .app{height:auto;min-height:100vh}
+  .main{grid-template-columns:1fr}
+  .scroll{overflow:visible}
+  .stats{flex-wrap:wrap;flex-basis:100%;order:3}
+  .item{grid-template-columns:50px minmax(0,1fr);}
+  .it-right{grid-column:2;flex-direction:column;align-items:flex-start;gap:4px}
+  .it-right .it-val{min-width:0;text-align:left}
+  .acts{flex-wrap:wrap}
+  dialog.cal{height:auto}
+  dialog.cal .dlg{max-height:calc(100dvh - 26px)}
+  .cal-body{grid-template-columns:1fr;overflow:auto;flex:1 1 auto}
+  .cal-left{min-height:auto}
+  .cal-side{min-height:auto}
+  .cal-side .scroll{flex:none}
+  .month{flex:none;grid-auto-rows:58px}
+  .day .tot{display:none}
+  .cal-sum .stat{padding:3px 8px}.cal-sum .stat b{font-size:14px}
+  .cal-side{border-left:none;padding-left:0;border-top:1px solid var(--line);padding-top:10px}
+  .bar{font-size:0;padding:0;height:5px;border-left:none}
+}
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="top">
+    <h1>Meus Vencimentos</h1>
+    <div class="stats" id="stats"></div>
+    <nav class="tools">
+      <button class="primary" id="btnCal">Calendário</button>
+      <button data-open="dlgRem">Lembretes</button>
+      <button data-open="dlgPasta">Pasta</button>
+      <button data-open="dlgClaude">Claude</button>
+      <button data-open="dlgBackup">Cópia</button>
+    </nav>
+  </header>
+
+  <div class="main">
+    <section class="panel col">
+      <h2>Adicionar</h2>
+      <div class="drop" id="drop" tabindex="0" role="button" aria-label="Escolher arquivos de boletos">
+        <b>Arraste aqui os PDFs</b>
+        <span class="muted small">ou clique para escolher (também aceita foto)</span>
+      </div>
+      <input type="file" id="file" accept="application/pdf,image/*" multiple hidden>
+      <div class="row" style="margin-top:8px"><button id="btnManual">+ Adicionar manualmente</button></div>
+      <div class="folder" id="folderBox"></div>
+      <div class="scroll" id="reviews"></div>
+      <div class="hint" id="hint">Os arquivos são lidos neste computador e não são enviados para lugar nenhum. Confira a data e o valor antes de salvar.</div>
+    </section>
+
+    <section class="panel col">
+      <div class="listhead">
+        <div class="tabs" role="tablist">
+          <button class="on" data-tab="pend" role="tab">Pendentes <span id="nPend"></span></button>
+          <button data-tab="done" role="tab">Concluídos <span id="nDone"></span></button>
+        </div>
+        <button id="btnIcsAll">Baixar lembretes (.ics)</button>
+      </div>
+      <div class="scroll" id="list"></div>
+      <div class="foot small muted" id="foot"></div>
+    </section>
+  </div>
+</div>
+
+<!-- Calendário -->
+<dialog class="cal" id="dlgCal"><div class="dlg">
+  <div class="dlg-h">
+    <div class="row"><button id="calPrev" aria-label="Mês anterior">‹</button><h2 id="calTitle" style="min-width:150px;text-align:center"></h2><button id="calNext" aria-label="Próximo mês">›</button><button id="calToday" class="sm">Hoje</button></div>
+    <button class="ghost" data-close>Fechar ✕</button>
+  </div>
+  <div class="cal-body">
+    <div class="cal-left">
+      <div class="cal-sum" id="calSum"></div>
+      <div class="wk"><div>Dom</div><div>Seg</div><div>Ter</div><div>Qua</div><div>Qui</div><div>Sex</div><div>Sáb</div></div>
+      <div class="month" id="calGrid"></div>
+      <div class="legend">
+        <span><i style="background:var(--red)"></i>vencido</span><span><i style="background:var(--amber)"></i>vence em até 3 dias</span>
+        <span><i style="background:var(--blue)"></i>a vencer</span><span><i style="background:var(--green)"></i>pago / concluído</span>
+        <span><i style="background:var(--accent);opacity:.45"></i>fundo mais forte = dia com mais a pagar</span>
+      </div>
+    </div>
+    <aside class="cal-side" id="calSide"></aside>
+  </div>
+</div></dialog>
+
+<!-- Pasta -->
+<dialog id="dlgPasta"><div class="dlg">
+  <div class="dlg-h"><h2>Pasta dos boletos</h2><button class="ghost" data-close>Fechar ✕</button></div>
+  <div class="dlg-b">
+    <p>Todos os PDFs ficam num único diretório, com o nome organizado pela data: <span class="code" style="display:inline">2026-11-25_boleto_condominio_R$850,00.pdf</span></p>
+    <p>Pasta sugerida: <b class="code" style="display:inline;color:var(--text)">C:\documentos\boletos</b></p>
+    <div id="pastaStatus"></div>
+    <div id="pastaFS">
+      <ol class="small" style="padding-left:18px;margin:6px 0 10px">
+        <li>Clique em <b>Escolher pasta</b>.</li>
+        <li>Vá até <b>C:\documentos</b> (crie a pasta, se não existir) e selecione-a. A página cria a subpasta <b>boletos</b> dentro dela.</li>
+        <li>Ou escolha qualquer outra pasta que preferir.</li>
+        <li>Autorize quando o navegador perguntar se a página pode salvar arquivos ali.</li>
+      </ol>
+      <div class="row"><button class="primary" id="btnPickDir">Escolher pasta</button><button id="btnForgetDir" hidden>Esquecer esta pasta</button><button class="ghost" id="btnUseDl">Prefiro usar os downloads do navegador</button></div>
+    </div>
+    <div id="pastaNoFS" hidden>
+      <div class="msg info">Os PDFs são <b>baixados</b> com o nome organizado. Para que caiam em <b>C:\documentos\boletos</b>:</div>
+      <ol class="small" style="padding-left:18px;margin:6px 0 10px">
+        <li>No Chrome ou no Edge, abra as <b>Configurações</b> e procure <b>Downloads</b>.</li>
+        <li>Em <b>Local</b>, clique em <b>Alterar</b> e escolha C:\documentos\boletos.<br><span class="muted">Ou ative <b>Perguntar onde salvar cada arquivo</b>, se preferir escolher a cada vez.</span></li>
+      </ol>
+      <div class="row"><button id="btnBackFS">Tentar gravar direto numa pasta</button></div>
+    </div>
+    <div id="pathWrap" hidden style="margin-top:10px"><label for="pastaPath">Caminho completo desta pasta <span class="muted">(o navegador não informa; digite para aparecer certo aqui e na instrução do Claude)</span></label>
+      <input id="pastaPath" placeholder="ex.: D:\OneDrive\Documentos\Boletos"></div>
+    <h3>Ao salvar um item</h3>
+    <label class="inline"><input type="checkbox" id="optSaveFile" checked> Guardar uma cópia do PDF na pasta</label>
+  </div>
+</div></dialog>
+
+<!-- Lembretes -->
+<dialog id="dlgRem"><div class="dlg">
+  <div class="dlg-h"><h2>Lembretes</h2><button class="ghost" data-close>Fechar ✕</button></div>
+  <div class="dlg-b">
+    <p class="muted small">Valem para os lembretes enviados à agenda do celular.</p>
+    <h3>Avisar quantos dias antes</h3>
+    <div class="chk" id="antChk"></div>
+    <div class="grid" style="margin-top:10px;max-width:220px"><div><label for="horaLemb">Horário do lembrete</label><input type="time" id="horaLemb" value="09:00"></div></div>
+    <h3>Como usar na agenda</h3>
+    <ul class="req small">
+      <li><b>iPhone:</b> abra o arquivo .ics e toque em "Adicionar ao Calendário".</li>
+      <li><b>Google Agenda:</b> use o botão "Agenda" de cada item, ou importe o .ics em Configurações › Importar e exportar.</li>
+      <li>Alguns aplicativos usam seus próprios avisos padrão em vez dos dias escolhidos aqui.</li>
+    </ul>
+  </div>
+</div></dialog>
+
+<!-- Claude -->
+<dialog id="dlgClaude" style="width:min(760px,calc(100vw - 24px))"><div class="dlg">
+  <div class="dlg-h"><h2>Automatizar com o Claude <span class="tag">opcional</span></h2><button class="ghost" data-close>Fechar ✕</button></div>
+  <div class="dlg-b">
+    <p>Se você usa o Claude, ele pode ler seu email todos os dias, salvar os boletos na sua pasta e mandar os avisos sozinho. Esta página monta a instrução; o Claude faz a configuração na sua própria conta.</p>
+    <ul class="req small">
+      <li>Precisa de conta no Claude, do app para computador e de um plano que permita conectar o email e criar tarefas agendadas.</li>
+      <li>O computador precisa estar ligado, com o app aberto, no horário do aviso.</li>
+      <li>Sem isso, continue usando esta página normalmente.</li>
+    </ul>
+    <div class="grid">
+      <div><label for="cHora">Horário do aviso diário</label><input type="time" id="cHora" value="07:00"></div>
+      <div><label for="cSemanal">Resumo semanal</label><select id="cSemanal"><option value="seg">Sim, segunda de manhã</option><option value="nao">Não</option></select></div>
+      <div><label for="cRem">Quem costuma mandar boletos</label><input id="cRem" placeholder="condomínio, escola…"></div>
+      <div><label for="cExc">O que deixar de fora</label><input id="cExc" placeholder="contas em débito automático"></div>
+    </div>
+    <p class="small muted" style="margin-top:8px">Pasta usada: <span id="cPastaTxt" class="code" style="display:inline"></span> (altere em "Pasta"; o Claude grava no mesmo diretório).</p>
+    <label class="inline"><input type="checkbox" id="cIncl" checked> Incluir minhas pendências desta página para o Claude conferir</label>
+    <h3>Instrução <span class="muted small">(pode editar)</span></h3>
+    <textarea id="cPrompt" rows="9"></textarea>
+    <div class="row" style="margin-top:8px">
+      <a class="btn primary" id="cOpenApp" href="#">Abrir no app do Claude</a>
+      <a class="btn" id="cOpenWeb" href="#" target="_blank" rel="noopener">Abrir no navegador</a>
+      <button id="cCopy">Copiar instrução</button>
+    </div>
+    <p class="small muted">A instrução aparece já escrita e só é enviada quando você confirmar no Claude. Se o botão não abrir o Claude, use "Copiar instrução".</p>
+  </div>
+</div></dialog>
+
+<!-- Cópia de segurança -->
+<dialog id="dlgBackup"><div class="dlg">
+  <div class="dlg-h"><h2>Cópia de segurança</h2><button class="ghost" data-close>Fechar ✕</button></div>
+  <div class="dlg-b">
+    <p class="small muted">A lista fica guardada só neste navegador. Se trocar de computador ou limpar os dados do navegador, ela some. Salve uma cópia de vez em quando (dá para guardá-la na pasta dos boletos).</p>
+    <div class="row">
+      <button id="btnExport" class="primary">Salvar cópia</button>
+      <button id="btnImport">Restaurar cópia</button>
+      <input type="file" id="importFile" accept="application/json,.json" hidden>
+      <button class="danger" id="btnClear">Apagar tudo</button>
+    </div>
+    <p class="small muted">Na primeira vez que um PDF escaneado (sem texto) for lido, a página baixa o componente de reconhecimento de texto (cerca de 5 MB).</p>
+  </div>
+</div></dialog>
+
+<div class="toast" id="toast"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script>
+"use strict";
+/* ================= Armazenamento ================= */
+const KEY="meusVencimentos.v1";
+const DEF_PASTA="C:\\documentos\\boletos";
+const DEF={items:[],cfg:{ant:[7,2],hora:"09:00",cHora:"07:00",cSemanal:"seg",cRem:"",cExc:"",cIncl:true,saveFile:true,pastaNome:"",modo:"pasta"}};
+let DB=load();
+function load(){try{const r=localStorage.getItem(KEY);if(r){const d=JSON.parse(r);return{items:d.items||[],cfg:Object.assign({},DEF.cfg,d.cfg||{})}}}catch(e){}return JSON.parse(JSON.stringify(DEF))}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(DB))}catch(e){toast("Não foi possível guardar neste navegador. Use 'Cópia'.")}}
+
+/* ================= Utilidades ================= */
+const $=s=>document.querySelector(s);
+const esc=s=>String(s==null?"":s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,7);
+const pad=n=>String(n).padStart(2,"0");
+function todayISO(){const d=new Date();return d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate())}
+function isoToDate(s){const[y,m,d]=s.split("-").map(Number);return new Date(y,m-1,d)}
+function dateToISO(d){return d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate())}
+function brToISO(s){const m=/^(\d{2})\/(\d{2})\/(\d{4})$/.exec(s);if(!m)return"";const d=new Date(+m[3],+m[2]-1,+m[1]);return(d.getDate()==+m[1]&&d.getMonth()==+m[2]-1)?dateToISO(d):""}
+function isoToBR(s){if(!s)return"";const[y,m,d]=s.split("-");return d+"/"+m+"/"+y}
+function daysUntil(iso){return Math.round((isoToDate(iso)-isoToDate(todayISO()))/864e5)}
+const money=v=>v==null||isNaN(v)?"":v.toLocaleString("pt-BR",{style:"currency",currency:"BRL"});
+function parseMoney(s){if(s==null)return null;s=String(s).replace(/[^\d,.-]/g,"");if(!s)return null;if(s.includes(","))s=s.replace(/\./g,"").replace(",",".");const v=parseFloat(s);return isNaN(v)?null:v}
+const norm=s=>s.normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase();
+let tt;function toast(m){const t=$("#toast");const dl=[...document.querySelectorAll("dialog[open]")].pop();(dl||document.body).appendChild(t);t.textContent=m;t.classList.add("on");clearTimeout(tt);tt=setTimeout(()=>t.classList.remove("on"),2800)}
+async function copy(text){try{await navigator.clipboard.writeText(text);return true}catch(e){const ta=document.createElement("textarea");ta.value=text;document.body.appendChild(ta);ta.select();let ok=false;try{ok=document.execCommand("copy")}catch(_){}ta.remove();return ok}}
+function download(name,content,type){const b=content instanceof Blob?content:new Blob([content],{type});const a=document.createElement("a");a.href=URL.createObjectURL(b);a.download=name;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},800)}
+
+/* ================= Linha digitável ================= */
+function mod10(n){let s=0,w=2;for(let i=n.length-1;i>=0;i--){let p=(+n[i])*w;if(p>9)p=Math.floor(p/10)+p%10;s+=p;w=w===2?1:2}return(10-s%10)%10}
+function mod11Banco(n){let s=0,w=2;for(let i=n.length-1;i>=0;i--){s+=(+n[i])*w;w=w===9?2:w+1}const d=11-s%11;return(d===0||d===10||d===11)?1:d}
+function mod11Conv(n){let s=0,w=2;for(let i=n.length-1;i>=0;i--){s+=(+n[i])*w;w=w===9?2:w+1}const r=s%11;return(r===0||r===1)?0:(r===10?1:11-r)}
+function fatorParaData(f){
+  if(!f)return"";
+  // Febraban: fator 1000 = 03/07/2000 no ciclo antigo (base 07/10/1997); novo ciclo: fator 1000 = 22/02/2025
+  const antigo=new Date(1997,9,7);antigo.setDate(antigo.getDate()+f);
+  const novo=new Date(2025,1,22);novo.setDate(novo.getDate()+(f-1000));
+  const hoje=isoToDate(todayISO());
+  const d=Math.abs(novo-hoje)<Math.abs(antigo-hoje)?novo:antigo;
+  return dateToISO(d);
+}
+function decodeLinha(raw){
+  const s=String(raw||"").replace(/\D/g,"");
+  if(s.length===47){
+    const c1=s.slice(0,9),c2=s.slice(10,20),c3=s.slice(21,31);
+    if(mod10(c1)!=+s[9]||mod10(c2)!=+s[20]||mod10(c3)!=+s[31])return null;
+    const bar=s.slice(0,4)+s[32]+s.slice(33,47)+c1.slice(4)+c2+c3;
+    if(mod11Banco(bar.slice(0,4)+bar.slice(5))!=+bar[4])return null;
+    const f=+s.slice(33,37),v=+s.slice(37,47)/100;
+    return{tipo:"bancario",linha:s,venc:fatorParaData(f),valor:v>0?v:null,banco:s.slice(0,3)};
+  }
+  if(s.length===48&&s[0]==="8"){
+    const ind=s[2];const m=(ind==="6"||ind==="7")?mod10:(ind==="8"||ind==="9")?mod11Conv:null;if(!m)return null;
+    let bar="";for(let i=0;i<4;i++){const b=s.slice(i*12,i*12+11);if(m(b)!=+s[i*12+11])return null;bar+=b}
+    if(m(bar.slice(0,3)+bar.slice(4))!=+bar[3])return null;
+    const v=(ind==="6"||ind==="8")?+bar.slice(4,15)/100:null;
+    return{tipo:"convenio",linha:s,venc:"",valor:v>0?v:null};
+  }
+  return null;
+}
+function formatLinha(s){
+  if(s.length===47)return s.slice(0,5)+"."+s.slice(5,10)+" "+s.slice(10,15)+"."+s.slice(15,21)+" "+s.slice(21,26)+"."+s.slice(26,32)+" "+s[32]+" "+s.slice(33);
+  if(s.length===48)return[0,12,24,36].map(i=>s.slice(i,i+11)+"-"+s[i+11]).join(" ");
+  return s;
+}
+function findLinha(text){
+  // junta trechos numéricos (com espaços, pontos, hífens) e testa janelas de 47/48 dígitos
+  const fixed=text.replace(/[Oo](?=[\d .\-]*\d)/g,"0");
+  const runs=fixed.match(/\d[\d .\-]{30,90}\d/g)||[];
+  const cands=[...runs,fixed.replace(/\D/g,"")];
+  for(const r of cands){const d=r.replace(/\D/g,"");
+    for(const L of [47,48])for(let i=0;i+L<=d.length;i++){const x=decodeLinha(d.slice(i,i+L));if(x)return x}}
+  return null;
+}
+
+/* ================= Extração de dados do texto ================= */
+function extractInfo(text,fname){
+  const info={descricao:"",venc:"",valor:null,linha:"",debito:false,obs:"",tipo:"boleto",fontes:[]};
+  const lines=text.split(/\n/).map(l=>l.replace(/\s+/g," ").trim()).filter(Boolean);
+  const nt=norm(text);
+  const ld=findLinha(text);
+  if(ld){info.linha=ld.linha;if(ld.valor)info.valor=ld.valor;if(ld.venc){info.venc=ld.venc;info.fontes.push("vencimento lido do código do boleto")}
+    info.fontes.push("código do boleto conferido")}
+  // vencimento no texto
+  if(!info.venc){const v=findVenc(lines);if(v){info.venc=v;info.fontes.push("vencimento lido do texto")}}
+  if(!info.venc){const all=(text.match(/\d{2}\/\d{2}\/\d{4}/g)||[]).map(brToISO).filter(Boolean).sort();if(all.length){info.venc=all[all.length-1];info.fontes.push("data mais recente do documento (confira)")}}
+  // data limite com multa
+  const dl=/data limite[^\d]{0,40}(\d{2}\/\d{2}\/\d{4})/i.exec(text);if(dl&&brToISO(dl[1])&&brToISO(dl[1])!==info.venc)info.obs="Pagável até "+dl[1]+" (com acréscimos)";
+  // valor no texto
+  if(info.valor==null){
+    const rv=/(total a pagar|valor do documento|valor cobrado|valor a pagar|valor total|valor)[^\d]{0,40}?(\d{1,3}(?:\.\d{3})*,\d{2})/i.exec(text);
+    if(rv)info.valor=parseMoney(rv[2]);
+  }
+  // débito automático
+  if(/debito automatico\s*(:|-)?\s*(banco|bco|ativo|cadastrado|em conta)/.test(nt)&&!/nao (esta|e) (em )?debito automatico\s*(:|-)?\s*(banco|bco)/.test(nt))info.debito=true;
+  // tipo
+  if(!ld&&!/boleto|linha digitavel|ficha de compensacao|pagavel|fatura|cobranca/.test(nt)&&/prazo|entrega|enviar|apresentar|comparecer|inscri/.test(nt))info.tipo="prazo";
+  // descrição: beneficiário
+  let desc="";
+  const benefRe=/^(benefici[aá]rio|cedente|quem vai receber|favorecido)\b[:\s-]*/i;
+  for(let i=0;i<lines.length&&!desc;i++){
+    if(benefRe.test(lines[i])){
+      let cand=lines[i].replace(benefRe,"");
+      if(!/[a-zA-Z]{3}/.test(cand)||/^(final|ag[eê]ncia|endere)/i.test(cand))cand=lines[i+1]||"";
+      cand=cand.replace(/R\$\s*[\d.,]+/g,"").replace(/\d{2}\.?\d{3}\.?\d{3}\/?\d{4}-?\d{2}/g,"").replace(/^[\s\-–:]+/,"").replace(/\s{2,}.*/,"");
+      cand=cand.replace(/\s+(ag[eê]ncia|c[oó]digo|vencimento|cnpj|cpf).*$/i,"").trim();
+      if(/[a-zA-Z]{3}/.test(cand)&&!/^(ag[eê]ncia|endere|c[oó]digo)/i.test(cand))desc=cand;
+    }
+  }
+  if(!desc){const known=/(enel|sabesp|comgas|claro|vivo|tim|oi |net |sky|light|cemig|copel|celesc|cpfl|energisa|equatorial|neoenergia|coelba|celpe|cosern|elektro|edp|iptu|ipva|detran|condom[ií]nio|unimed|amil|bradesco sa[uú]de|sulam[eé]rica|nubank|ita[uú]|santander|caixa)/i.exec(text);
+    if(known){const l=lines.find(x=>x.toLowerCase().includes(known[1].toLowerCase().trim()));desc=(l&&l.length<60)?l:known[1].trim()}}
+  if(!desc)desc=fname.replace(/\.[a-z0-9]+$/i,"").replace(/[_]+/g," ").trim();
+  desc=desc.replace(/\s+(S\.?A\.?|LTDA\.?|ME|EIRELI)$/i,"").trim();
+  info.descricao=desc.length>70?desc.slice(0,70):titleCase(desc);
+  return info;
+}
+function findVenc(lines){
+  const DT=/\d{2}\/\d{2}\/\d{4}/g;
+  // datas que claramente não são o vencimento (emissão, leitura, processamento…)
+  const excl=new Set();
+  const exRe=/(emiss[aã]o|leitura|processamento|autoriza[cç][aã]o|apresenta[cç][aã]o|postagem)[^\d\n]{0,25}(\d{2}\/\d{2}\/\d{4})/gi;
+  for(const l of lines){let m;while((m=exRe.exec(l)))excl.add(m[2])}
+  const ok=d=>brToISO(d)&&!excl.has(d);
+  for(const kw of [/vencimento|vence em/, /data limite|prazo final|prazo/]){
+    for(let i=0;i<lines.length;i++){
+      const nl=lines[i].split("").map(c=>norm(c)||c).join("");const m=kw.exec(nl);if(!m)continue;
+      // 1) data na mesma linha, depois da palavra
+      const after=lines[i].slice(m.index).match(DT)||[];const a=after.find(ok);if(a)return brToISO(a);
+      // 2) cabeçalho em colunas ("A: B: VENCIMENTO: C:") com os valores na linha de baixo, na mesma ordem
+      const next=lines[i+1]||"";const colons=(lines[i].match(/:/g)||[]).length;
+      if(colons>=2){const idx=(lines[i].slice(0,m.index).match(/:/g)||[]).length;const toks=next.split(/\s+/).filter(Boolean);
+        if(toks[idx]&&/^\d{2}\/\d{2}\/\d{4}$/.test(toks[idx])&&brToISO(toks[idx]))return brToISO(toks[idx])}
+      // 3) primeira data válida nas duas linhas seguintes
+      for(const l of lines.slice(i+1,i+3)){const d=(l.match(DT)||[]).find(ok);if(d)return brToISO(d)}
+    }
+  }
+  return "";
+}
+function titleCase(s){if(s!==s.toUpperCase())return s;const low=["de","da","do","das","dos","e"];return s.toLowerCase().split(" ").map((w,i)=>(i&&low.includes(w))?w:w.charAt(0).toUpperCase()+w.slice(1)).join(" ")}
+
+/* ================= Leitura de PDF / imagem ================= */
+if(window.pdfjsLib)pdfjsLib.GlobalWorkerOptions.workerSrc="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
+async function pdfText(pdf){
+  let out="";
+  for(let p=1;p<=Math.min(pdf.numPages,4);p++){
+    const page=await pdf.getPage(p);const tc=await page.getTextContent();
+    const rows=[];
+    for(const it of tc.items){if(!it.str||!it.str.trim())continue;const y=it.transform[5],x=it.transform[4];
+      let r=rows.find(r=>Math.abs(r.y-y)<3);if(!r){r={y,items:[]};rows.push(r)}r.items.push({x,s:it.str})}
+    rows.sort((a,b)=>b.y-a.y);
+    for(const r of rows){r.items.sort((a,b)=>a.x-b.x);out+=r.items.map(i=>i.s).join("  ")+"\n"}
+  }
+  return out;
+}
+let tessLoading=null;
+function loadTesseract(){
+  if(window.Tesseract)return Promise.resolve();
+  if(!tessLoading)tessLoading=new Promise((res,rej)=>{const s=document.createElement("script");s.src="https://cdn.jsdelivr.net/npm/tesseract.js@5.1.1/dist/tesseract.min.js";s.onload=res;s.onerror=()=>rej(new Error("Sem conexão para baixar o leitor de texto."));document.head.appendChild(s)});
+  return tessLoading;
+}
+let tessWorker=null;
+async function getWorker(onProg){
+  await loadTesseract();
+  if(!tessWorker){
+    tessWorker=await Tesseract.createWorker("por",1,{
+      workerPath:"https://cdn.jsdelivr.net/npm/tesseract.js@5.1.1/dist/worker.min.js",
+      corePath:"https://cdn.jsdelivr.net/npm/tesseract.js-core@5.1.1",
+      langPath:"https://cdn.jsdelivr.net/npm/@tesseract.js-data/por@1.0.0/4.0.0_best_int",
+      logger:m=>{if(m&&typeof m.progress==="number"&&onProg.cur)onProg.cur(m.status,m.progress)}
+    });
+  }
+  return tessWorker;
+}
+const progHook={cur:null};
+async function ocrCanvas(cv){const w=await getWorker(progHook);const r=await w.recognize(cv);return r.data.text||""}
+async function readFile(file,setStatus){
+  const isPdf=/pdf$/i.test(file.type)||/\.pdf$/i.test(file.name);
+  if(isPdf){
+    if(!window.pdfjsLib)throw new Error("Sem conexão para carregar o leitor de PDF.");
+    const buf=await file.arrayBuffer();
+    const pdf=await pdfjsLib.getDocument({data:buf}).promise;
+    let text=await pdfText(pdf);
+    if(text.replace(/\s/g,"").length>80&&findLinha(text))return{text,ocr:false};
+    if(text.replace(/\s/g,"").length>200)return{text,ocr:false};
+    // PDF escaneado: reconhece o texto da imagem
+    let ot="";const n=Math.min(pdf.numPages,2);
+    for(let p=1;p<=n;p++){
+      setStatus("Reconhecendo texto da página "+p+" de "+n+"…",0);
+      progHook.cur=(st,pr)=>setStatus((st==="recognizing text"?"Reconhecendo texto da página "+p+" de "+n:"Preparando o leitor de texto")+"…",pr);
+      const page=await pdf.getPage(p);const vp=page.getViewport({scale:2.6});
+      const cv=document.createElement("canvas");cv.width=vp.width;cv.height=vp.height;
+      await page.render({canvasContext:cv.getContext("2d"),viewport:vp}).promise;
+      ot+=await ocrCanvas(cv)+"\n";
+      if(findLinha(ot)&&p>=1&&/venc/i.test(ot))break;
+    }
+    return{text:text+"\n"+ot,ocr:true};
+  }
+  if(/^image\//.test(file.type)){
+    setStatus("Reconhecendo texto da imagem…",0);
+    progHook.cur=(st,pr)=>setStatus((st==="recognizing text"?"Reconhecendo texto da imagem":"Preparando o leitor de texto")+"…",pr);
+    const img=await createImageBitmap(file);const cv=document.createElement("canvas");
+    const sc=Math.min(1,3000/Math.max(img.width,img.height));cv.width=img.width*sc;cv.height=img.height*sc;cv.getContext("2d").drawImage(img,0,0,cv.width,cv.height);
+    return{text:await ocrCanvas(cv),ocr:true};
+  }
+  throw new Error("Tipo de arquivo não suportado.");
+}
+
+
+
+/* ================= Pasta dos boletos ================= */
+const FS_OK=typeof window.showDirectoryPicker==="function";
+let DIR=null;
+function idb(){return new Promise((res,rej)=>{const r=indexedDB.open("meusVencimentos",1);r.onupgradeneeded=()=>r.result.createObjectStore("kv");r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error)})}
+async function kvGet(k){try{const db=await idb();return await new Promise(r=>{const q=db.transaction("kv").objectStore("kv").get(k);q.onsuccess=()=>r(q.result);q.onerror=()=>r(null)})}catch(e){return null}}
+async function kvSet(k,v){try{const db=await idb();await new Promise(r=>{const t=db.transaction("kv","readwrite");t.objectStore("kv").put(v,k);t.oncomplete=r;t.onerror=r})}catch(e){}}
+async function kvDel(k){try{const db=await idb();await new Promise(r=>{const t=db.transaction("kv","readwrite");t.objectStore("kv").delete(k);t.oncomplete=r;t.onerror=r})}catch(e){}}
+async function dirPerm(ask){if(!DIR)return"none";try{let p=await DIR.queryPermission({mode:"readwrite"});if(p!=="granted"&&ask)p=await DIR.requestPermission({mode:"readwrite"});return p}catch(e){return"denied"}}
+function pastaLabel(){return (DIR&&DB.cfg.modo!=="download")?(DB.cfg.pastaNome||DIR.name):DEF_PASTA}
+const EMBED=(()=>{try{return window.self!==window.top}catch(e){return true}})();
+const useFS=()=>FS_OK&&!EMBED&&DB.cfg.modo!=="download";
+function pastaMsg(kind,html){$("#pastaStatus").innerHTML=`<div class="msg ${kind}">${html}</div>`}
+function errTxt(e){return e?(e.name||"Erro")+(e.message?": "+e.message:""):"erro desconhecido"}
+async function renderFolder(keepMsg){
+  const box=$("#folderBox");const st=$("#pastaStatus");
+  $("#pathWrap").hidden=true;
+  $("#pastaFS").hidden=!useFS();$("#pastaNoFS").hidden=useFS();$("#btnForgetDir").hidden=!DIR;$("#btnBackFS").hidden=!(FS_OK&&!EMBED);
+  if(!DB.cfg.saveFile){box.innerHTML=`<span class="dot"></span><span class="path">Cópia dos PDFs desligada</span><button class="sm" data-open="dlgPasta">Ajustar</button>`;if(!keepMsg)st.innerHTML="";return}
+  if(!useFS()){box.innerHTML=`<span class="dot on"></span><span class="path" title="Os PDFs são baixados com o nome organizado">Downloads do navegador · nome organizado</span><button class="sm" data-open="dlgPasta">Pasta</button>`;if(!keepMsg)st.innerHTML="";return}
+  if(!DIR){box.innerHTML=`<span class="dot warn"></span><span class="path" title="${esc(DEF_PASTA)}">${esc(DEF_PASTA)} · não escolhida</span><button class="sm primary" data-open="dlgPasta">Escolher</button>`;
+    if(!keepMsg)st.innerHTML=`<div class="msg warn">Nenhuma pasta escolhida ainda.</div>`;return}
+  $("#pathWrap").hidden=false;if(document.activeElement!==$("#pastaPath"))$("#pastaPath").value=pastaLabel();
+  const p=await dirPerm(false);
+  box.innerHTML=`<span class="dot ${p==="granted"?"on":"warn"}"></span><span class="path" title="${esc(pastaLabel())}">${esc(pastaLabel())}</span><button class="sm" data-open="dlgPasta">Trocar</button>`;
+  if(!keepMsg)st.innerHTML=`<div class="msg ${p==="granted"?"ok":"info"}">Pasta escolhida: <b>${esc(pastaLabel())}</b>${p==="granted"?"":" — o navegador vai pedir autorização de novo na próxima gravação."}</div>`;
+}
+async function useDir(h,nome){
+  DIR=h;DB.cfg.pastaNome=norm(nome)==="documentos\\boletos"?DEF_PASTA:nome;DB.cfg.modo="pasta";save();await kvSet("dir",h);
+  await renderFolder(true);updatePrompt();
+  if(DB.cfg.pastaNome===DEF_PASTA)pastaMsg("ok","Pronto. Os PDFs serão guardados em <b>"+esc(pastaLabel())+"</b>.");
+  else{pastaMsg("ok","Pronto. Os PDFs serão guardados na pasta <b>"+esc(h.name)+"</b>. Digite abaixo o caminho completo dela.");$("#pastaPath").focus();$("#pastaPath").select()}
+}
+const FALLBACK=`<div class="row" style="margin:6px 0 2px"><button data-usedl>Usar os downloads do navegador</button></div>`;
+function bindFallback(){const b=$("#pastaStatus [data-usedl]");if(b)b.onclick=()=>setDownloadMode()}
+async function setDownloadMode(){DB.cfg.modo="download";save();await renderFolder(true);updatePrompt();
+  pastaMsg("ok","Pronto. Cada PDF salvo será <b>baixado</b> com o nome organizado. Para que caiam em C:\\documentos\\boletos, veja as instruções abaixo.")}
+async function pickDir(){
+  if(EMBED){pastaMsg("warn","<b>A página está aberta dentro de outro aplicativo</b> (por exemplo, a pré-visualização do Claude), e ali o navegador não deixa escolher pastas. Baixe o arquivo e abra-o com dois cliques, direto no Chrome ou no Edge.");return}
+  if(!FS_OK){renderFolder();return}
+  pastaMsg("info","Passo 1 de 2: escolha a pasta na janela que abriu.");
+  let h;
+  // passo 1: escolher a pasta (só leitura)
+  try{h=await window.showDirectoryPicker({id:"boletos",startIn:"documents"})}
+  catch(e){
+    const tech=`<div class="small muted">Detalhe técnico: ${esc(errTxt(e))}</div>`;
+    if(e&&e.name==="AbortError")$("#pastaStatus").innerHTML=`<div class="msg warn">O navegador não aceitou a pasta, ou a janela foi fechada.<br>O Chrome e o Edge recusam algumas pastas, como <b>C:\\</b> e a raiz de <b>Documentos</b> ou <b>Downloads</b>. Tente assim: na janela de escolha, entre em <b>Documentos</b>, crie uma pasta nova chamada <b>boletos</b>, entre nela e clique em <b>Selecionar pasta</b>.</div>${tech}<p class="small">Se continuar sem funcionar, use os downloads do navegador: os PDFs são baixados já com o nome organizado.</p>${FALLBACK}`;
+    else if(e&&e.name==="SecurityError")$("#pastaStatus").innerHTML=`<div class="msg warn">O navegador bloqueou a escolha de pasta nesta página.</div>${tech}${FALLBACK}`;
+    else $("#pastaStatus").innerHTML=`<div class="msg warn">Não foi possível usar esta pasta.</div>${tech}${FALLBACK}`;
+    bindFallback();return;
+  }
+  // passo 2: permissão para gravar
+  pastaMsg("info","Passo 2 de 2: autorize a gravação na pasta <b>"+esc(h.name)+"</b> (botão <b>Editar arquivos</b> ou <b>Salvar alterações</b>).");
+  let perm="denied",permErr=null;
+  try{perm=await h.requestPermission({mode:"readwrite"})}catch(e){permErr=e}
+  if(perm!=="granted"){
+    $("#pastaStatus").innerHTML=`<div class="msg warn">A pasta <b>${esc(h.name)}</b> foi escolhida, mas o navegador não deu permissão para gravar nela${perm==="denied"&&!permErr?" (a autorização foi recusada)":""}.</div>
+      <div class="small muted">Detalhe técnico: ${esc(permErr?errTxt(permErr):"permissão = "+perm)}</div>
+      <div class="row" style="margin:6px 0 2px"><button class="primary" data-retry>Pedir permissão de novo</button><button data-usedl>Usar os downloads do navegador</button></div>`;
+    $("#pastaStatus [data-retry]").onclick=async()=>{let p2="denied",e2=null;try{p2=await h.requestPermission({mode:"readwrite"})}catch(e){e2=e}
+      if(p2==="granted")chooseSub(h);else pastaMsg("warn","Ainda sem permissão ("+esc(e2?errTxt(e2):p2)+"). Use os downloads do navegador ou tente outra pasta.")};
+    bindFallback();return;
+  }
+  chooseSub(h);
+}
+function chooseSub(h){
+  if(norm(h.name)==="boletos"){useDir(h,h.name);return}
+  const box=$("#pastaStatus");
+  box.innerHTML=`<div class="msg info">Você escolheu <b>${esc(h.name)}</b>. Onde guardar os PDFs?</div>
+    <div class="row" style="margin:4px 0 8px"><button class="primary" data-sub>Criar a subpasta ${esc(h.name)}\\boletos</button><button data-here>Usar ${esc(h.name)} mesmo</button></div>`;
+  box.querySelector("[data-here]").onclick=()=>useDir(h,h.name);
+  box.querySelector("[data-sub]").onclick=async()=>{try{const s=await h.getDirectoryHandle("boletos",{create:true});await useDir(s,h.name+"\\boletos")}
+    catch(e){pastaMsg("warn","Não consegui criar a subpasta ("+esc(errTxt(e))+"). Tente de novo ou use a pasta escolhida.")}};
+}
+function fileNameFor(i,orig){
+  const ext=((orig||"").match(/\.[a-z0-9]+$/i)||[".pdf"])[0].toLowerCase();
+  const val=i.valor!=null?"_R$"+i.valor.toFixed(2).replace(".",","):"";
+  return i.venc+"_"+(i.tipo==="prazo"?"prazo":"boleto")+"_"+slug(i.descricao)+val+ext;
+}
+async function storeFile(file,i){
+  if(!file||!DB.cfg.saveFile)return"";
+  const name=fileNameFor(i,file.name);
+  if(useFS()&&DIR){
+    if(await dirPerm(true)!=="granted"){toast("Sem autorização para gravar na pasta.");return""}
+    let final=name;
+    for(let n=2;n<50;n++){try{const fh=await DIR.getFileHandle(final);const f=await fh.getFile();if(f.size===file.size)return final;final=name.replace(/(\.[a-z0-9]+)$/i,` (${n})$1`)}catch(e){break}}
+    const fh=await DIR.getFileHandle(final,{create:true});const w=await fh.createWritable();await w.write(file);await w.close();renderFolder();return final;
+  }
+  if(useFS()&&!DIR){toast("Escolha a pasta dos boletos (botão Pasta) para guardar o PDF.");return""}
+  download(name,file);return name;
+}
+
+/* ================= Revisão antes de salvar ================= */
+function reviewCard(data,file){
+  const el=document.createElement("div");el.className="review";
+  const d=data||{};
+  el.innerHTML=`
+    <div class="row" style="justify-content:space-between"><span class="fname">${esc(d.arquivo||"Novo item")}</span><span class="muted small" data-st></span></div>
+    <div class="progress" data-pg hidden><i></i></div>
+    <div data-msgs></div>
+    <div data-form ${d.loading?"hidden":""}>
+      <div class="grid" style="margin-top:6px;grid-template-columns:1fr 1fr">
+        <div><label>Tipo</label><select data-f="tipo"><option value="boleto">Boleto / conta</option><option value="prazo">Prazo / atividade</option></select></div>
+        <div><label>Vencimento</label><input type="date" data-f="venc"></div>
+        <div style="grid-column:1/-1"><label>Descrição</label><input data-f="descricao" placeholder="ex.: Condomínio"></div>
+        <div><label>Valor (R$)</label><input data-f="valor" inputmode="decimal" placeholder="0,00"></div>
+        <div><label>Observação</label><input data-f="obs" placeholder="opcional"></div>
+        <div style="grid-column:1/-1" data-linwrap><label>Código do boleto (linha digitável)</label><input data-f="linha" inputmode="numeric" placeholder="Cole para ler vencimento e valor"></div>
+      </div>
+      <label class="inline" style="margin-top:6px"><input type="checkbox" data-f="debito"> Pago em débito automático</label>
+      <div class="row" style="margin-top:8px"><button class="primary" data-save>Salvar</button><button class="ghost" data-cancel>Descartar</button></div>
+    </div>`;
+  const f=k=>el.querySelector(`[data-f="${k}"]`);
+  const toggleTipo=()=>{el.querySelector("[data-linwrap]").hidden=f("tipo").value!=="boleto"};
+  const setForm=x=>{f("tipo").value=x.tipo||"boleto";f("descricao").value=x.descricao||"";f("venc").value=x.venc||"";f("valor").value=x.valor!=null?x.valor.toFixed(2).replace(".",","):"";
+    f("linha").value=x.linha?formatLinha(x.linha):"";f("obs").value=x.obs||"";f("debito").checked=!!x.debito;toggleTipo()};
+  f("tipo").addEventListener("change",toggleTipo);
+  f("linha").addEventListener("input",()=>{const r=decodeLinha(f("linha").value);const box=el.querySelector("[data-msgs]");const n=f("linha").value.replace(/\D/g,"").length;
+    if(r){if(r.venc)f("venc").value=r.venc;if(r.valor!=null)f("valor").value=r.valor.toFixed(2).replace(".",",");
+      box.innerHTML=`<div class="msg ok">Código conferido.${r.venc?" Vencimento e valor preenchidos.":" Valor preenchido; confira a data."}</div>`}
+    else if(n>=44)box.innerHTML=`<div class="msg warn">Este código não confere. Verifique os números.</div>`});
+  el.querySelector("[data-cancel]").onclick=()=>{el.remove();updateHint()};
+  el.querySelector("[data-save]").onclick=async()=>{
+    const item={id:d.id||uid(),tipo:f("tipo").value,descricao:f("descricao").value.trim(),venc:f("venc").value,valor:parseMoney(f("valor").value),
+      linha:f("tipo").value==="boleto"?f("linha").value.replace(/\D/g,""):"",obs:f("obs").value.trim(),debito:f("debito").checked,status:d.status||"pendente",
+      concluido:d.concluido,arquivo:d.arquivoSalvo||"",criado:d.criado||new Date().toISOString()};
+    item.arquivoSalvo=d.arquivoSalvo||"";
+    if(!item.descricao){toast("Escreva uma descrição.");f("descricao").focus();return}
+    if(!item.venc){toast("Informe a data.");f("venc").focus();return}
+    const dup=DB.items.find(i=>i.id!==item.id&&((item.linha&&i.linha===item.linha)||(i.descricao.toLowerCase()===item.descricao.toLowerCase()&&i.venc===item.venc&&i.valor===item.valor)));
+    if(dup&&!el.dataset.confirmDup){el.dataset.confirmDup=1;el.querySelector("[data-msgs]").innerHTML=`<div class="msg warn">Já existe um item igual (${esc(dup.descricao)}, ${isoToBR(dup.venc)}). Clique em Salvar de novo para salvar assim mesmo.</div>`;return}
+    const btn=el.querySelector("[data-save]");btn.disabled=true;
+    try{if(file){const nm=await storeFile(file,item);if(nm){item.arquivoSalvo=nm}}}catch(e){console.error(e);toast("O item foi salvo, mas o PDF não pôde ser gravado na pasta.")}
+    DB.items=DB.items.filter(i=>i.id!==item.id);DB.items.push(item);save();render();el.remove();updateHint();
+    toast("Salvo: "+item.descricao+(item.arquivoSalvo&&file?" · PDF guardado":""));
+  };
+  el._set=(st,pr)=>{el.querySelector("[data-st]").textContent=st||"";const pg=el.querySelector("[data-pg]");if(pr==null)pg.hidden=true;else{pg.hidden=false;pg.firstElementChild.style.width=Math.round(pr*100)+"%"}};
+  el._fill=(x,msgs)=>{el.querySelector("[data-form]").hidden=false;el._set("",null);setForm(x);el.querySelector("[data-msgs]").innerHTML=msgs||""};
+  el._fail=m=>{el._set("",null);el.querySelector("[data-form]").hidden=false;setForm({descricao:(d.arquivo||"").replace(/\.[a-z0-9]+$/i,"")});el.querySelector("[data-msgs]").innerHTML=`<div class="msg warn">${esc(m)} Preencha os dados.</div>`};
+  if(!d.loading)setForm(d);
+  $("#reviews").prepend(el);updateHint();
+  return el;
+}
+function updateHint(){$("#hint").hidden=!!$("#reviews").children.length}
+let queue=Promise.resolve();
+function handleFiles(files){
+  for(const file of files){
+    const card=reviewCard({arquivo:file.name,loading:true},file);card._set("Lendo…",null);
+    queue=queue.then(async()=>{
+      try{
+        const {text,ocr}=await readFile(file,(s,p)=>card._set(s,p));
+        const info=extractInfo(text,file.name);const msgs=[];
+        if(info.linha)msgs.push(`<div class="msg ok">Código do boleto encontrado e conferido.</div>`);
+        else if(info.tipo==="boleto")msgs.push(`<div class="msg info">Não encontrei o código do boleto${ocr?" (o arquivo é uma imagem)":""}. Confira data e valor.</div>`);
+        if(info.linha&&!info.venc)msgs.push(`<div class="msg info">Este tipo de conta não traz o vencimento no código. Confira a data.</div>`);
+        if(info.venc&&daysUntil(info.venc)<0)msgs.push(`<div class="msg warn">Este vencimento já passou (${isoToBR(info.venc)}).</div>`);
+        if(info.debito)msgs.push(`<div class="msg info">Parece estar em débito automático.</div>`);
+        card._fill(info,msgs.join(""));
+      }catch(e){console.error(e);card._fail(e&&e.message?e.message:"Não consegui ler este arquivo.")}
+    });
+  }
+}
+
+/* ================= Lista ================= */
+let TAB="pend";
+function statusOf(i){if(i.status==="concluido")return"done";const d=daysUntil(i.venc);const max=Math.max(3,...(DB.cfg.ant.length?DB.cfg.ant:[0]));
+  if(d<0)return i.debito?"soon":"late";if(d<=3)return"soon";if(d<=max)return"near";return"ok"}
+function whenText(i){const d=daysUntil(i.venc);if(i.status==="concluido")return"Concluído"+(i.concluido?" em "+isoToBR(i.concluido.slice(0,10)):"");
+  if(d<0)return(d===-1?"Venceu ontem":"Venceu há "+(-d)+" dias");if(d===0)return"Vence hoje";if(d===1)return"Vence amanhã";return"Vence em "+d+" dias"}
+const MESES=["jan","fev","mar","abr","mai","jun","jul","ago","set","out","nov","dez"];
+const MESES_L=["janeiro","fevereiro","março","abril","maio","junho","julho","agosto","setembro","outubro","novembro","dezembro"];
+function tagsOf(i){const st=statusOf(i);const d=daysUntil(i.venc);return[i.tipo==="prazo"?'<span class="tag">prazo</span>':'',i.debito?'<span class="tag auto">débito aut.</span>':'',
+  st==="late"?'<span class="tag late">vencido</span>':'',(st==="soon"&&d<0)?'<span class="tag soon">confira o débito</span>':st==="soon"?'<span class="tag soon">urgente</span>':''].join("")}
+function itemActions(i){return i.status!=="concluido"
+  ?`<button class="sm primary" data-act="done">${i.tipo==="prazo"?"Concluído":"Paguei"}</button>${i.linha?`<button class="sm" data-act="copy" title="Copiar o código para colar no app do banco">Copiar código</button>`:""}<a class="btn sm" target="_blank" rel="noopener" href="${gcalLink(i)}" title="Adicionar ao Google Agenda">Agenda</a><button class="sm ghost" data-act="edit">Editar</button><button class="sm ghost danger" data-act="del" title="Excluir">✕</button>`
+  :`<button class="sm" data-act="undo">Voltar para pendentes</button><button class="sm ghost danger" data-act="del" title="Excluir">✕</button>`}
+function render(){
+  const pend=DB.items.filter(i=>i.status!=="concluido").sort((a,b)=>a.venc.localeCompare(b.venc));
+  const done=DB.items.filter(i=>i.status==="concluido").sort((a,b)=>b.venc.localeCompare(a.venc));
+  $("#nPend").textContent=pend.length?"("+pend.length+")":"";$("#nDone").textContent=done.length?"("+done.length+")":"";
+  const late=pend.filter(i=>daysUntil(i.venc)<0&&!i.debito);
+  const week=pend.filter(i=>{const d=daysUntil(i.venc);return d>=0&&d<=7});
+  const m30=pend.filter(i=>{const d=daysUntil(i.venc);return d>=0&&d<=30}).reduce((s,i)=>s+(i.valor||0),0);
+  const lateV=late.reduce((s,i)=>s+(i.valor||0),0);
+  $("#stats").innerHTML=`<div class="stat ${late.length?"red":""}"><b>${late.length}</b><span>vencido${late.length===1?"":"s"}${lateV?" · "+money(lateV):""}</span></div>
+    <div class="stat ${week.length?"amber":""}"><b>${week.length}</b><span>nos próximos 7 dias</span></div>
+    <div class="stat"><b>${m30?money(m30):"—"}</b><span>a pagar em 30 dias</span></div>`;
+  const arr=TAB==="pend"?pend:done;
+  $("#btnIcsAll").hidden=TAB!=="pend"||!pend.length;
+  const tot=arr.reduce((s,i)=>s+(i.valor||0),0);
+  $("#foot").innerHTML=arr.length?`<span>${arr.length} ${arr.length===1?"item":"itens"}</span><span>Total: <b style="color:var(--text)">${money(tot)}</b></span>`:"";
+  if(!arr.length){$("#list").innerHTML=`<div class="empty">${TAB==="pend"?"Nenhuma pendência. Arraste um boleto para a esquerda.":"Nada concluído ainda."}</div>`;return}
+  $("#list").innerHTML=arr.map(i=>{const st=statusOf(i);const dt=isoToDate(i.venc);
+    return `<div class="item st-${st}" data-id="${i.id}">
+      <div class="date"><div class="d">${pad(dt.getDate())}</div><div class="m">${MESES[dt.getMonth()]}${dt.getFullYear()!==new Date().getFullYear()?" "+String(dt.getFullYear()).slice(2):""}</div></div>
+      <div style="min-width:0">
+        <div class="it-desc" title="${esc(i.descricao)}">${esc(i.descricao)}${tagsOf(i)}</div>
+        <div class="it-meta">${whenText(i)}${i.obs?" · "+esc(i.obs):""}${i.arquivoSalvo?" · 📄 "+esc(i.arquivoSalvo):""}</div>
+        ${i.linha?`<div class="code" title="${esc(formatLinha(i.linha))}">${esc(formatLinha(i.linha))}</div>`:""}
+      </div>
+      <div class="it-right"><span class="it-val">${money(i.valor)}</span><div class="acts">${itemActions(i)}</div></div>
+    </div>`}).join("");
+}
+async function onItemAction(e){
+  const b=e.target.closest("[data-act]");if(!b)return;const host=b.closest("[data-id]");if(!host)return;const id=host.dataset.id;const i=DB.items.find(x=>x.id===id);if(!i)return;
+  const a=b.dataset.act;
+  if(a==="done"){i.status="concluido";i.concluido=new Date().toISOString();save();render();renderCal();toast("Marcado como concluído.")}
+  if(a==="undo"){i.status="pendente";delete i.concluido;save();render();renderCal()}
+  if(a==="copy")toast(await copy(i.linha)?"Código copiado. Cole no app do banco.":"Não consegui copiar.");
+  if(a==="del"){if(b.dataset.armed){DB.items=DB.items.filter(x=>x.id!==id);save();render();renderCal();toast("Excluído."+(i.arquivoSalvo?" O PDF continua na pasta.":""))}
+    else{b.dataset.armed=1;b.textContent="Excluir?";b.classList.remove("ghost");setTimeout(()=>{if(b.isConnected){delete b.dataset.armed;b.textContent="✕";b.classList.add("ghost")}},3500)}}
+  if(a==="edit"){if($("#dlgCal").open)$("#dlgCal").close();const c=reviewCard(Object.assign({},i,{arquivo:"Editando: "+i.descricao}));c.scrollIntoView({behavior:"smooth",block:"nearest"});c.querySelector('[data-f="descricao"]').focus()}
+}
+$("#list").addEventListener("click",onItemAction);
+document.querySelectorAll(".tabs button").forEach(b=>b.onclick=()=>{TAB=b.dataset.tab;document.querySelectorAll(".tabs button").forEach(x=>x.classList.toggle("on",x===b));render()});
+
+/* ================= Calendário ================= */
+let CAL=(()=>{const d=new Date();return{y:d.getFullYear(),m:d.getMonth(),sel:todayISO()}})();
+function itemsOn(iso){return DB.items.filter(i=>i.venc===iso).sort((a,b)=>(a.status==="concluido")-(b.status==="concluido")||(b.valor||0)-(a.valor||0))}
+function renderCal(){
+  if(!$("#dlgCal").open)return;
+  const {y,m}=CAL;$("#calTitle").textContent=MESES_L[m].charAt(0).toUpperCase()+MESES_L[m].slice(1)+" de "+y;
+  const first=new Date(y,m,1);const start=new Date(y,m,1-first.getDay());
+  const weeks=Math.ceil((first.getDay()+new Date(y,m+1,0).getDate())/7);
+  $("#calGrid").style.gridTemplateRows=window.matchMedia("(max-width:900px)").matches?"":`repeat(${weeks},1fr)`;
+  const mi=DB.items.filter(i=>{const d=isoToDate(i.venc);return d.getFullYear()===y&&d.getMonth()===m});
+  const byDay={};for(const i of mi)(byDay[i.venc]=byDay[i.venc]||[]).push(i);
+  const dayTot=Object.values(byDay).map(a=>a.reduce((s,i)=>s+(i.status!=="concluido"?(i.valor||0):0),0));
+  const maxT=Math.max(1,...dayTot);
+  const sum=(arr)=>arr.reduce((s,i)=>s+(i.valor||0),0);
+  const pago=mi.filter(i=>i.status==="concluido"),aberto=mi.filter(i=>i.status!=="concluido");
+  const venc=aberto.filter(i=>daysUntil(i.venc)<0&&!i.debito);
+  $("#calSum").innerHTML=`<div class="stat"><b>${money(sum(mi))||"R$ 0,00"}</b><span>total do mês · ${mi.length} ${mi.length===1?"item":"itens"}</span></div>
+    <div class="stat"><b style="color:var(--green)">${money(sum(pago))||"R$ 0,00"}</b><span>pago</span></div>
+    <div class="stat"><b style="color:var(--blue)">${money(sum(aberto))||"R$ 0,00"}</b><span>a pagar</span></div>
+    ${venc.length?`<div class="stat red"><b>${money(sum(venc))}</b><span>vencido sem pagar</span></div>`:""}`;
+  const td=todayISO();let html="";
+  for(let k=0;k<weeks*7;k++){const d=new Date(start);d.setDate(start.getDate()+k);const iso=dateToISO(d);const its=itemsOn(iso);
+    const open=its.filter(i=>i.status!=="concluido");const t=open.reduce((s,i)=>s+(i.valor||0),0);
+    const heat=t?(0.06+0.3*t/maxT):0;
+    const shown=its.slice(0,3);
+    html+=`<button class="day ${d.getMonth()!==m?"out":""} ${iso===td?"today":""} ${iso===CAL.sel?"sel":""}" data-day="${iso}" title="${isoToBR(iso)}${its.length?" — "+its.length+" item(ns)":""}">
+      ${heat?`<span class="heat" style="opacity:${heat.toFixed(2)}"></span>`:""}
+      <span class="n"><span>${d.getDate()}</span>${t?`<span class="tot">${money(t).replace("R$","").trim()}</span>`:""}</span>
+      <span class="bars">${shown.map(i=>`<span class="bar ${statusOf(i)}">${esc(i.descricao)}${i.valor!=null?" · "+money(i.valor).replace("R$","").trim():""}</span>`).join("")}${its.length>3?`<span class="more">+${its.length-3}</span>`:""}</span>
+    </button>`}
+  $("#calGrid").innerHTML=html;
+  renderSide();
+}
+function renderSide(){
+  const iso=CAL.sel;const its=itemsOn(iso);const dt=isoToDate(iso);
+  const wd=["domingo","segunda","terça","quarta","quinta","sexta","sábado"][dt.getDay()];
+  const t=its.reduce((s,i)=>s+(i.valor||0),0),tA=its.filter(i=>i.status!=="concluido").reduce((s,i)=>s+(i.valor||0),0);
+  $("#calSide").innerHTML=`<h2 style="margin-bottom:2px">${dt.getDate()} de ${MESES_L[dt.getMonth()]}</h2><div class="muted small" style="margin-bottom:6px">${wd}${iso===todayISO()?" · hoje":""}</div>
+    <div class="scroll">${its.length?its.map(i=>`<div class="side-item" data-id="${i.id}"><div class="t"><div style="font-weight:600">${esc(i.descricao)}</div><div class="small muted">${whenText(i)}${tagsOf(i)}</div>
+      <div class="acts" style="margin-top:4px">${i.status!=="concluido"?`<button class="sm primary" data-act="done">${i.tipo==="prazo"?"Concluído":"Paguei"}</button>${i.linha?`<button class="sm" data-act="copy">Copiar código</button>`:""}`:`<button class="sm" data-act="undo">Desfazer</button>`}<button class="sm ghost" data-act="edit">Editar</button></div></div>
+      <div class="it-val">${money(i.valor)}</div></div>`).join(""):`<div class="muted" style="padding:20px 0">Nenhum pagamento ou prazo neste dia.</div>`}</div>
+    ${its.length?`<div class="side-total"><span>Total do dia</span><span>${money(t)}</span></div>${tA!==t?`<div class="small muted" style="display:flex;justify-content:space-between"><span>ainda a pagar</span><span>${money(tA)}</span></div>`:""}`:""}
+    <div class="row" style="margin-top:10px"><button class="sm" id="calAdd">+ Adicionar neste dia</button></div>`;
+}
+$("#calGrid").addEventListener("click",e=>{const b=e.target.closest("[data-day]");if(!b)return;CAL.sel=b.dataset.day;const d=isoToDate(CAL.sel);
+  if(d.getMonth()!==CAL.m){CAL.y=d.getFullYear();CAL.m=d.getMonth()}renderCal()});
+$("#calSide").addEventListener("click",e=>{if(e.target.id==="calAdd"){$("#dlgCal").close();const c=reviewCard({arquivo:"Novo item",venc:CAL.sel});c.querySelector('[data-f="descricao"]').focus();return}onItemAction(e)});
+$("#calPrev").onclick=()=>{CAL.m--;if(CAL.m<0){CAL.m=11;CAL.y--}renderCal()};
+$("#calNext").onclick=()=>{CAL.m++;if(CAL.m>11){CAL.m=0;CAL.y++}renderCal()};
+$("#calToday").onclick=()=>{const d=new Date();CAL={y:d.getFullYear(),m:d.getMonth(),sel:todayISO()};renderCal()};
+$("#btnCal").onclick=()=>{$("#dlgCal").showModal();renderCal()};
+$("#dlgCal").addEventListener("keydown",e=>{if(e.target.tagName==="INPUT")return;if(e.key==="ArrowLeft")$("#calPrev").click();if(e.key==="ArrowRight")$("#calNext").click()});
+
+/* ================= Agenda (lembretes) ================= */
+const slug=s=>norm(s).replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"").slice(0,40)||"item";
+function evTitle(i){return(i.tipo==="prazo"?"Prazo: ":"Vence: ")+i.descricao+(i.valor!=null?" – "+money(i.valor):"")}
+function evDesc(i){const p=[];if(i.linha)p.push("Código do boleto: "+formatLinha(i.linha));if(i.debito)p.push("Em débito automático: confira o saldo.");if(i.obs)p.push(i.obs);p.push("Criado por Meus Vencimentos.");return p.join("\n")}
+function gcalLink(i){const d=i.venc.replace(/-/g,"");const n=new Date(isoToDate(i.venc));n.setDate(n.getDate()+1);
+  return"https://calendar.google.com/calendar/render?action=TEMPLATE&text="+encodeURIComponent(evTitle(i))+"&dates="+d+"/"+dateToISO(n).replace(/-/g,"")+"&details="+encodeURIComponent(evDesc(i))}
+function icsEsc(s){return String(s).replace(/\\/g,"\\\\").replace(/;/g,"\\;").replace(/,/g,"\\,").replace(/\r?\n/g,"\\n")}
+function fold(line){const enc=new TextEncoder();if(enc.encode(line).length<=74)return line;let out="",cur="";for(const ch of line){if(enc.encode(cur+ch).length>73){out+=cur+"\r\n ";cur=ch}else cur+=ch}return out+cur}
+function buildICS(items){
+  const [hh,mm]=(DB.cfg.hora||"09:00").split(":").map(Number);const mins=hh*60+mm;
+  const stamp=new Date().toISOString().replace(/[-:]/g,"").replace(/\.\d+/,"");
+  const L=["BEGIN:VCALENDAR","VERSION:2.0","PRODID:-//Meus Vencimentos//PT-BR","CALSCALE:GREGORIAN","METHOD:PUBLISH"];
+  for(const i of items){const d=i.venc.replace(/-/g,"");const n=new Date(isoToDate(i.venc));n.setDate(n.getDate()+1);
+    L.push("BEGIN:VEVENT","UID:"+i.id+"@meus-vencimentos","DTSTAMP:"+stamp,"DTSTART;VALUE=DATE:"+d,"DTEND;VALUE=DATE:"+dateToISO(n).replace(/-/g,""),
+      "SUMMARY:"+icsEsc(evTitle(i)),"DESCRIPTION:"+icsEsc(evDesc(i)),"TRANSP:TRANSPARENT");
+    for(const a of [...new Set(DB.cfg.ant)].sort((a,b)=>b-a)){const off=a*1440-mins;
+      L.push("BEGIN:VALARM","ACTION:DISPLAY","DESCRIPTION:"+icsEsc((a===0?"Hoje: ":a===1?"Amanhã: ":"Em "+a+" dias: ")+evTitle(i)),"TRIGGER:"+(off>0?"-PT"+off+"M":"PT"+(-off)+"M"),"END:VALARM")}
+    L.push("END:VEVENT")}
+  L.push("END:VCALENDAR");return L.map(fold).join("\r\n")+"\r\n";
+}
+$("#btnIcsAll").onclick=()=>{const p=DB.items.filter(i=>i.status!=="concluido"&&daysUntil(i.venc)>=0);if(!p.length){toast("Não há pendências futuras.");return}
+  download("lembretes-vencimentos.ics",buildICS(p),"text/calendar");toast(p.length+" lembrete"+(p.length>1?"s":"")+" no arquivo.")};
+const ANTS=[0,1,2,3,5,7,10,15];
+function renderCfg(){
+  $("#antChk").innerHTML=ANTS.map(a=>`<label><input type="checkbox" value="${a}" ${DB.cfg.ant.includes(a)?"checked":""}> ${a===0?"no dia":a===1?"1 dia":a+" dias"}</label>`).join("");
+  $("#horaLemb").value=DB.cfg.hora;["cHora","cSemanal","cRem","cExc"].forEach(k=>$("#"+k).value=DB.cfg[k]);$("#cIncl").checked=DB.cfg.cIncl;$("#optSaveFile").checked=DB.cfg.saveFile;
+}
+$("#antChk").addEventListener("change",()=>{DB.cfg.ant=[...$("#antChk").querySelectorAll("input:checked")].map(x=>+x.value);save();render();updatePrompt()});
+$("#horaLemb").addEventListener("change",e=>{DB.cfg.hora=e.target.value||"09:00";save()});
+$("#optSaveFile").addEventListener("change",e=>{DB.cfg.saveFile=e.target.checked;save();renderFolder()});
+$("#btnPickDir").onclick=pickDir;
+$("#pastaPath").addEventListener("input",e=>{DB.cfg.pastaNome=e.target.value.trim()||(DIR?DIR.name:"");save();updatePrompt();
+  const pb=$("#folderBox .path");if(pb){pb.textContent=pastaLabel();pb.title=pastaLabel()}});
+$("#btnUseDl").onclick=()=>setDownloadMode();
+$("#btnBackFS").onclick=async()=>{DB.cfg.modo="pasta";save();await renderFolder();updatePrompt()};
+$("#btnForgetDir").onclick=async()=>{DIR=null;DB.cfg.pastaNome="";save();await kvDel("dir");renderFolder();updatePrompt()};
+
+/* ================= Claude ================= */
+let promptEdited=false;
+function antText(){const a=[...DB.cfg.ant].sort((x,y)=>y-x);if(!a.length)return"3 dias antes";return a.map(x=>x===0?"no dia":x===1?"1 dia antes":x+" dias antes").join(" e ")}
+function buildPrompt(){
+  const c=DB.cfg;const pasta=pastaLabel();
+  const pend=DB.items.filter(i=>i.status!=="concluido").sort((a,b)=>a.venc.localeCompare(b.venc));
+  let t=`Quero configurar um procedimento de avisos de boletos e prazos. Conduza a configuração comigo, passo a passo, e me pergunte o que faltar.
+
+Minhas preferências:
+- Pasta dos boletos no meu computador: ${pasta}${DIR&&pasta!==DEF_PASTA?" (confirme comigo o caminho completo)":""}. Todos os PDFs ficam nesse mesmo diretório, sem subpastas.
+- Horário do aviso diário: ${c.cHora||"07:00"}
+- Avisar ${antText()} do vencimento, e destacar o que vence em até 3 dias
+- Resumo semanal: ${c.cSemanal==="seg"?"sim, segunda de manhã, com o que vence nos próximos 30 dias e o que ficou pendente":"não"}
+- Quem costuma mandar boletos ou prazos: ${c.cRem||"(não informado)"}
+- Deixar de fora: ${c.cExc||"(nada)"}
+
+O que fazer:
+1. Verifique se meu email está conectado. Se não estiver, me ajude a conectar.
+2. Verifique se você tem acesso à pasta acima no meu computador. Se não tiver, peça acesso. Se a pasta não existir, crie-a.
+3. Procure nos emails dos últimos 90 dias, lidos ou não, boletos e comunicados com data limite (termos como boleto, vencimento, linha digitável, fatura, prazo, data limite; anexos em PDF).
+4. Para cada um, leia vencimento e valor (no boleto, de preferência pela linha digitável). Salve o PDF na pasta com o nome AAAA-MM-DD_tipo_descricao_R$valor.pdf (por exemplo 2026-11-25_boleto_condominio_R$850,00.pdf), sem duplicar arquivos que já estejam lá.
+5. Marque cada email tratado com o marcador "Prazos/Processado". Use o marcador, não o status de lido, para saber o que já foi tratado.
+6. Mostre a lista inicial de pendências para eu conferir antes de seguir.
+7. Depois da minha aprovação, crie uma tarefa agendada diária no horário acima que repita os passos 3 a 5 para emails novos e me envie um resumo do que vence nos próximos dias. Uma vez por semana, revise os emails dos últimos 30 dias que ainda estão sem o marcador.
+8. Nunca faça pagamentos nem transferências; apenas avise.`;
+  if(c.cIncl&&pend.length)t+=`\n\nPendências que já anotei (confira se aparecem no email e inclua as que não aparecerem):\n`+pend.map(i=>`- ${isoToBR(i.venc)} – ${i.descricao}${i.valor!=null?" – "+money(i.valor):""}${i.debito?" (débito automático)":""}`).join("\n");
+  return t;
+}
+function updatePrompt(){$("#cPastaTxt").textContent=pastaLabel();if(!promptEdited)$("#cPrompt").value=buildPrompt();syncLinks()}
+function syncLinks(){const q=encodeURIComponent($("#cPrompt").value.slice(0,12000));$("#cOpenApp").href="claude://claude.ai/new?q="+q;$("#cOpenWeb").href="https://claude.ai/new?q="+q}
+["cHora","cSemanal","cRem","cExc"].forEach(k=>$("#"+k).addEventListener("input",e=>{DB.cfg[k]=e.target.value;save();updatePrompt()}));
+$("#cIncl").addEventListener("change",e=>{DB.cfg.cIncl=e.target.checked;save();updatePrompt()});
+$("#cPrompt").addEventListener("input",()=>{promptEdited=true;syncLinks()});
+$("#cCopy").onclick=async()=>toast(await copy($("#cPrompt").value)?"Instrução copiada. Cole numa conversa nova do Claude.":"Não consegui copiar.");
+
+/* ================= Cópia de segurança ================= */
+$("#btnExport").onclick=async()=>{const name="meus-vencimentos-copia-"+todayISO()+".json";const body=JSON.stringify(DB,null,2);
+  if(FS_OK&&DIR&&await dirPerm(true)==="granted"){try{const fh=await DIR.getFileHandle(name,{create:true});const w=await fh.createWritable();await w.write(body);await w.close();toast("Cópia salva na pasta dos boletos.");return}catch(e){}}
+  download(name,body,"application/json")};
+$("#btnImport").onclick=()=>$("#importFile").click();
+$("#importFile").onchange=async e=>{const f=e.target.files[0];if(!f)return;try{const d=JSON.parse(await f.text());if(!Array.isArray(d.items))throw 0;
+  const ids=new Set(DB.items.map(i=>i.id));let n=0;for(const i of d.items)if(!ids.has(i.id)){DB.items.push(i);n++}
+  if(d.cfg)DB.cfg=Object.assign({},DB.cfg,d.cfg);save();renderCfg();render();toast(n+" item(ns) restaurado(s).")}catch(_){toast("Arquivo de cópia inválido.")}e.target.value=""};
+$("#btnClear").onclick=e=>{const b=e.currentTarget;if(b.dataset.armed){DB.items=[];save();render();delete b.dataset.armed;b.textContent="Apagar tudo";toast("Lista apagada. Os PDFs na pasta continuam lá.")}
+  else{b.dataset.armed=1;b.textContent="Clique de novo para apagar a lista";setTimeout(()=>{delete b.dataset.armed;b.textContent="Apagar tudo"},4000)}};
+
+/* ================= Janelas e entrada de arquivos ================= */
+document.addEventListener("click",e=>{const o=e.target.closest("[data-open]");if(o){const d=document.getElementById(o.dataset.open);d.showModal();if(o.dataset.open==="dlgClaude")updatePrompt();if(o.dataset.open==="dlgPasta")renderFolder()}
+  const c=e.target.closest("[data-close]");if(c)c.closest("dialog").close()});
+document.querySelectorAll("dialog").forEach(d=>d.addEventListener("click",e=>{if(e.target===d)d.close()}));
+const drop=$("#drop"),fi=$("#file");
+drop.onclick=()=>fi.click();drop.onkeydown=e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();fi.click()}};
+fi.onchange=()=>{handleFiles([...fi.files]);fi.value=""};
+["dragenter","dragover"].forEach(t=>drop.addEventListener(t,e=>{e.preventDefault();drop.classList.add("over")}));
+["dragleave","drop"].forEach(t=>drop.addEventListener(t,e=>{e.preventDefault();drop.classList.remove("over")}));
+drop.addEventListener("drop",e=>handleFiles([...e.dataTransfer.files]));
+document.addEventListener("dragover",e=>e.preventDefault());document.addEventListener("drop",e=>{if(!drop.contains(e.target))e.preventDefault()});
+$("#btnManual").onclick=()=>{const c=reviewCard({arquivo:"Novo item"});c.querySelector('[data-f="descricao"]').focus()};
+
+(async()=>{if(EMBED){const w=document.createElement("div");w.className="msg warn";w.style.margin="0";w.innerHTML="Esta página está aberta dentro de outro aplicativo. Para gravar os PDFs na pasta e guardar a lista, baixe o arquivo e abra-o direto no Chrome ou no Edge.";document.querySelector(".app").prepend(w)}renderCfg();render();if(FS_OK){const h=await kvGet("dir");if(h)DIR=h}await renderFolder();updatePrompt()})();
+setInterval(()=>{render();renderCal()},60*60*1000);
+</script>
+</body>
+</html>
